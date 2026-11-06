@@ -1,0 +1,226 @@
+:root {
+    --kpgs-primary: #0f6f8a;
+    --kpgs-primary-dark: #0a4f64;
+    --kpgs-primary-light: #dff2f6;
+    --kpgs-primary-soft: #edf8fa;
+    --kpgs-accent: #45a9bd;
+    --kpgs-accent-light: #e8f7fa;
+    --kpgs-navy: #123b50;
+    --kpgs-text: #243746;
+    --kpgs-muted: #6b7c86;
+    --kpgs-border: #dce7eb;
+    --kpgs-surface: #ffffff;
+    --kpgs-page: #f5f9fa;
+
+    --bs-primary: var(--kpgs-primary);
+    --bs-primary-rgb: 15, 111, 138;
+    --bs-link-color: var(--kpgs-primary);
+    --bs-link-hover-color: var(--kpgs-primary-dark);
+}
+
+body {
+    color: var(--kpgs-text);
+    background-color: var(--kpgs-page) !important;
+}
+
+a {
+    color: var(--kpgs-primary);
+}
+
+a:hover {
+    color: var(--kpgs-primary-dark);
+}
+
+/* Primary Bootstrap components */
+.btn-primary {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--kpgs-primary);
+    --bs-btn-border-color: var(--kpgs-primary);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--kpgs-primary-dark);
+    --bs-btn-hover-border-color: var(--kpgs-primary-dark);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--kpgs-primary-dark);
+    --bs-btn-active-border-color: var(--kpgs-primary-dark);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: var(--kpgs-primary);
+    --bs-btn-disabled-border-color: var(--kpgs-primary);
+}
+
+.btn-outline-primary {
+    --bs-btn-color: var(--kpgs-primary);
+    --bs-btn-border-color: var(--kpgs-primary);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--kpgs-primary);
+    --bs-btn-hover-border-color: var(--kpgs-primary);
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--kpgs-primary-dark);
+    --bs-btn-active-border-color: var(--kpgs-primary-dark);
+}
+
+.btn-link {
+    --bs-btn-color: var(--kpgs-primary);
+    --bs-btn-hover-color: var(--kpgs-primary-dark);
+}
+
+.text-primary {
+    color: var(--kpgs-primary) !important;
+}
+
+.bg-primary {
+    background-color: var(--kpgs-primary) !important;
+}
+
+.border-primary {
+    border-color: var(--kpgs-primary) !important;
+}
+
+.bg-primary-subtle {
+    background-color: var(--kpgs-primary-light) !important;
+}
+
+.text-primary-emphasis {
+    color: var(--kpgs-primary-dark) !important;
+}
+
+.border-primary-subtle {
+    border-color: #b8dce5 !important;
+}
+
+/* Navigation */
+.navbar {
+    background-color: var(--kpgs-surface) !important;
+}
+
+.navbar-brand .fw-bold {
+    color: var(--kpgs-navy) !important;
+}
+
+.navbar-brand .small {
+    color: var(--kpgs-primary) !important;
+}
+
+.navbar .btn-light:hover,
+.navbar .btn-light:focus {
+    background-color: var(--kpgs-primary-soft);
+    border-color: #c5e2e8;
+    color: var(--kpgs-primary-dark);
+}
+
+/* Dashboard/sidebar navigation */
+aside .nav-link {
+    color: var(--kpgs-muted) !important;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+aside .nav-link:hover {
+    color: var(--kpgs-primary-dark) !important;
+    background-color: var(--kpgs-primary-soft) !important;
+}
+
+aside .nav-link.bg-light {
+    color: var(--kpgs-primary-dark) !important;
+    background-color: var(--kpgs-primary-light) !important;
+}
+
+/* Avatar / identity */
+.navbar .rounded-circle.bg-primary,
+aside .rounded-circle.bg-primary {
+    background-color: var(--kpgs-primary) !important;
+}
+
+/* Cards and surfaces */
+.card {
+    border-color: var(--kpgs-border);
+}
+
+.card-header {
+    border-bottom-color: var(--kpgs-border);
+}
+
+/* Forms */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: #76bdca;
+    box-shadow: 0 0 0 0.2rem rgba(15, 111, 138, 0.15);
+}
+
+.form-check-input:checked {
+    background-color: var(--kpgs-primary);
+    border-color: var(--kpgs-primary);
+}
+
+/* Tables */
+.table > :not(caption) > * > * {
+    border-bottom-color: var(--kpgs-border);
+}
+
+.table thead th {
+    color: var(--kpgs-navy);
+    background-color: var(--kpgs-primary-soft);
+}
+
+/* Pagination */
+.page-link {
+    color: var(--kpgs-primary);
+}
+
+.page-link:hover {
+    color: var(--kpgs-primary-dark);
+    background-color: var(--kpgs-primary-soft);
+}
+
+.page-item.active .page-link {
+    background-color: var(--kpgs-primary);
+    border-color: var(--kpgs-primary);
+}
+
+/* Alerts and status elements that use Bootstrap primary */
+.alert-primary {
+    --bs-alert-color: var(--kpgs-primary-dark);
+    --bs-alert-bg: var(--kpgs-primary-light);
+    --bs-alert-border-color: #b8dce5;
+}
+
+/* Dropdown */
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--kpgs-primary-soft);
+    color: var(--kpgs-primary-dark);
+}
+
+/* Progress */
+.progress-bar {
+    background-color: var(--kpgs-primary);
+}
+
+/* Focus accessibility */
+.btn:focus-visible,
+a:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+    outline: 2px solid rgba(69, 169, 189, 0.55);
+    outline-offset: 2px;
+}
+
+/* KPGS utility classes for elements that need explicit identity colors. */
+.kpgs-primary {
+    color: var(--kpgs-primary) !important;
+}
+
+.kpgs-primary-bg {
+    background-color: var(--kpgs-primary) !important;
+}
+
+.kpgs-soft-bg {
+    background-color: var(--kpgs-primary-soft) !important;
+}
+
+.kpgs-navy {
+    color: var(--kpgs-navy) !important;
+}
+
+.kpgs-border {
+    border-color: var(--kpgs-border) !important;
+}

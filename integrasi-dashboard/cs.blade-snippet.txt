@@ -1,0 +1,5 @@
+Letakkan tombol ini pada bagian "Akses Cepat" di resources/views/dashboard/cs.blade.php (jangan ganti seluruh file):
+
+<div class="col-12 col-md-6">
+    <a href="{{ route('pencairan-simpanan.cs.index') }}" class="btn btn-outline-primary"><i class="bi bi-wallet2 me-2"></i>Pemeriksaan Pencairan Simpanan</a>
+</div>

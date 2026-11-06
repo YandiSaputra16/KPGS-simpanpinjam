@@ -1,0 +1,1168 @@
+
+/* =========================================================
+   1. CONTAINER
+   ========================================================= */
+
+.kpgs-container-1100 { max-width: 1100px; }
+.kpgs-container-1000 { max-width: 1000px; }
+.kpgs-container-900 { max-width: 900px; }
+
+
+/* =========================================================
+   2. SIDEBAR DAN LAYOUT
+   ========================================================= */
+
+.kpgs-sidebar-desktop { width: 260px; }
+
+.kpgs-sidebar-desktop-app {
+    width: 250px;
+    flex-shrink: 0;
+}
+
+.kpgs-sidebar-mobile {
+    width: 280px;
+    max-width: 85vw;
+}
+
+.kpgs-sidebar-mobile-app {
+    width: 280px;
+    max-width: 85%;
+}
+
+.kpgs-sidebar-scroll-dashboard {
+    height: calc(100vh - 56px);
+}
+
+.kpgs-sidebar-scroll-app {
+    height: calc(100vh - 64px);
+}
+
+.kpgs-sidebar-content-dashboard {
+    height: calc(100% - 73px);
+}
+
+.kpgs-sidebar-content-app {
+    height: calc(100% - 65px);
+}
+
+.kpgs-app-main {
+    min-width: 0;
+}
+
+.kpgs-app-page-header {
+    color: #174A8B;
+}
+
+
+/* =========================================================
+   3. AVATAR DAN LOGO
+   ========================================================= */
+
+.kpgs-avatar-36 {
+    width: 36px;
+    height: 36px;
+}
+
+.kpgs-avatar-40 {
+    width: 40px;
+    height: 40px;
+}
+
+.kpgs-logo-96 {
+    width: 96px;
+    height: 96px;
+}
+
+.kpgs-logo-48 {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.kpgs-logo-settings {
+    max-height: 96px;
+    object-fit: contain;
+}
+
+.kpgs-thumb-48 {
+    width: 48px;
+    height: 48px;
+}
+
+.kpgs-thumb-96x64 {
+    width: 96px;
+    height: 64px;
+}
+
+.kpgs-image-contain-256 {
+    max-height: 256px;
+    object-fit: contain;
+}
+
+.kpgs-image-contain-600 {
+    max-height: 600px;
+    object-fit: contain;
+}
+
+.kpgs-image-height-208 { height: 208px; }
+.kpgs-image-height-224 { height: 224px; }
+
+
+/* =========================================================
+   4. LOGO BERANDA PUBLIK
+   ========================================================= */
+
+.kpgs-public-hero {
+    min-height: 380px;
+    padding: 2rem;
+}
+
+.kpgs-public-logo {
+    display: block;
+    width: 100%;
+    max-width: 520px;
+    height: 340px;
+    object-fit: contain;
+    object-position: center;
+    margin-inline: auto;
+}
+
+.kpgs-navbar-logo {
+    display: block;
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+
+/* =========================================================
+   5. UTILITAS
+   ========================================================= */
+
+.kpgs-pre-line { white-space: pre-line; }
+.kpgs-news-summary { max-width: 400px; }
+.kpgs-profile-menu { min-width: 220px; }
+.kpgs-pointer { cursor: pointer; }
+
+.kpgs-collapse-arrow {
+    transition: transform 0.2s;
+}
+
+.kpgs-cloak,
+.kpgs-d-none {
+    display: none !important;
+}
+
+.kpgs-progress-width {
+    width: var(--kpgs-progress, 0%);
+}
+
+.kpgs-w-60 { width: 60px; }
+
+.kpgs-modal-backdrop { z-index: 1060; }
+.kpgs-modal-dialog { max-width: 500px; }
+
+
+/* =========================================================
+   6. TIPOGRAFI APLIKASI
+   ========================================================= */
+
+/* Ukuran dasar dan keterbacaan */
+body {
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Judul halaman */
+main h1,
+main .h1 {
+    font-size: 1.85rem;
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+main h2,
+main .h2 {
+    font-size: 1.55rem;
+    line-height: 1.35;
+    font-weight: 700;
+}
+
+main h3,
+main .h3 {
+    font-size: 1.35rem;
+    line-height: 1.4;
+    font-weight: 650;
+}
+
+main h4,
+main .h4 {
+    font-size: 1.2rem;
+    line-height: 1.45;
+    font-weight: 650;
+}
+
+/* Teks isi, label, dan keterangan */
+main p,
+main label,
+main .form-label {
+    line-height: 1.6;
+}
+
+main .small,
+main small {
+    font-size: 0.875rem;
+}
+
+/* Input dan tombol lebih nyaman dibaca */
+main .form-control,
+main .form-select {
+    font-size: 1rem;
+    min-height: 42px;
+}
+
+main textarea.form-control {
+    min-height: 100px;
+}
+
+main .btn {
+    font-size: 0.95rem;
+}
+
+main .btn-sm {
+    font-size: 0.875rem;
+}
+
+/* Tabel */
+main .table {
+    font-size: 0.95rem;
+}
+
+main .table thead th {
+    font-size: 0.9rem;
+    font-weight: 650;
+    vertical-align: middle;
+}
+
+main .table tbody td {
+    vertical-align: middle;
+    line-height: 1.55;
+}
+
+/* Kartu */
+main .card-title {
+    font-size: 1.1rem;
+    font-weight: 650;
+}
+
+main .card-body {
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   7. SIDEBAR DESKTOP
+   ========================================================= */
+
+.kpgs-app-sidebar {
+    background-color: #174A8B;
+    color: #FFFFFF;
+    border-right: 0 !important;
+    flex-shrink: 0;
+}
+
+.kpgs-app-sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.92) !important;
+    border-radius: 0.4rem;
+    margin-bottom: 0.3rem;
+    padding: 0.8rem 0.9rem;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.kpgs-app-sidebar .nav-link:hover,
+.kpgs-app-sidebar .nav-link:focus,
+.kpgs-app-sidebar .nav-link.bg-light,
+.kpgs-app-sidebar .nav-link.active {
+    color: #174A8B !important;
+    background-color: #FFFFFF !important;
+}
+
+.kpgs-app-sidebar .nav-link.active,
+.kpgs-app-sidebar .nav-link.bg-light {
+    font-weight: 650;
+}
+
+.kpgs-app-sidebar .text-dark,
+.kpgs-app-sidebar .text-secondary,
+.kpgs-app-sidebar .text-muted,
+.kpgs-app-sidebar .fw-bold,
+.kpgs-app-sidebar .fw-semibold {
+    color: #FFFFFF !important;
+}
+
+
+/* =========================================================
+   8. SIDEBAR MOBILE
+   ========================================================= */
+
+/* Panel tetap muncul dari kiri */
+#mobileSidebar.offcanvas-start {
+    --bs-offcanvas-width: 280px;
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: auto !important;
+    width: 280px !important;
+    max-width: 85vw !important;
+    height: 100vh;
+    margin: 0 !important;
+}
+
+.kpgs-mobile-sidebar {
+    background-color: #174A8B;
+    color: #FFFFFF;
+}
+
+.kpgs-mobile-sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+#mobileSidebar .offcanvas-body {
+    font-size: 1rem;
+}
+
+#mobileSidebar .offcanvas-body .text-dark,
+#mobileSidebar .offcanvas-body .text-secondary,
+#mobileSidebar .offcanvas-body .text-muted,
+#mobileSidebar .offcanvas-body .fw-bold,
+#mobileSidebar .offcanvas-body .fw-semibold {
+    color: #FFFFFF !important;
+}
+
+#mobileSidebar .offcanvas-body .nav-link {
+    color: rgba(255, 255, 255, 0.92) !important;
+    border-radius: 0.4rem;
+    margin-bottom: 0.3rem;
+    padding: 0.8rem 0.9rem;
+    font-size: 1.05rem;
+    line-height: 1.5;
+}
+
+#mobileSidebar .offcanvas-body .nav-link:hover,
+#mobileSidebar .offcanvas-body .nav-link:focus,
+#mobileSidebar .offcanvas-body .nav-link.active,
+#mobileSidebar .offcanvas-body .nav-link.bg-light {
+    color: #174A8B !important;
+    background-color: #FFFFFF !important;
+}
+
+#mobileSidebar .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+
+/* =========================================================
+   9. LAPORAN KPGS
+   ========================================================= */
+
+.kpgs-report-page {
+    color: #1f2937;
+}
+
+.kpgs-report-page > .d-flex:first-child,
+.kpgs-report-page > .mb-4:first-child {
+    padding: 1.15rem 1.35rem;
+    margin-bottom: 1.25rem !important;
+    background: linear-gradient(115deg, #f1f6ff 0%, #ffffff 76%);
+    border: 1px solid #dbe7fb;
+    border-left: 4px solid #2458a6;
+    border-radius: 0.65rem;
+}
+
+.kpgs-report-page h4 {
+    color: #173b72;
+    letter-spacing: -0.02em;
+}
+
+.kpgs-report-page .card {
+    border: 1px solid #e3e9f2 !important;
+    border-radius: 0.65rem;
+    overflow: hidden;
+}
+
+.kpgs-report-page .card-header {
+    background: #f5f8fc !important;
+    border-bottom: 1px solid #e3e9f2;
+}
+
+.kpgs-report-page .card-header h6 {
+    color: #173b72;
+}
+
+.kpgs-report-page .table thead th {
+    background: #edf3fb;
+    color: #243b5a;
+    border-bottom: 1px solid #d8e2f0;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.kpgs-report-page .table tbody td {
+    border-color: #e8edf4;
+}
+
+.kpgs-report-page .table tbody tr:hover {
+    --bs-table-accent-bg: #f6f9fe;
+}
+
+.kpgs-report-page .kpgs-report-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.kpgs-report-page .btn-primary {
+    background: #2458a6;
+    border-color: #2458a6;
+}
+
+.kpgs-report-page .btn-primary:hover {
+    background: #194783;
+    border-color: #194783;
+}
+
+
+/* =========================================================
+   10. RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+    .kpgs-public-hero {
+        min-height: 240px;
+        padding: 1.5rem;
+    }
+
+    .kpgs-public-logo {
+        max-width: 300px;
+        height: 190px;
+    }
+
+    main h1,
+    main .h1 {
+        font-size: 1.55rem;
+    }
+
+    main h2,
+    main .h2 {
+        font-size: 1.35rem;
+    }
+
+    main h3,
+    main .h3 {
+        font-size: 1.2rem;
+    }
+
+    main .table {
+        font-size: 0.9rem;
+    }
+
+    main .card-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .kpgs-navbar-logo {
+        width: 48px;
+        height: 48px;
+    }
+
+    body {
+        font-size: 0.975rem;
+    }
+
+    main h1,
+    main .h1 {
+        font-size: 1.45rem;
+    }
+
+    main .form-control,
+    main .form-select {
+        font-size: 1rem;
+    }
+
+    #mobileSidebar .offcanvas-body .nav-link {
+        font-size: 1rem;
+    }
+}
+
+
+
+@media print {
+    @page {
+        size: landscape;
+        margin: 12mm;
+    }
+
+    html,
+    body {
+        width: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 10pt !important;
+    }
+
+    body {
+        display: block !important;
+    }
+
+    body * {
+        visibility: visible !important;
+    }
+
+    /* Sembunyikan navigasi dan kontrol aplikasi. */
+    nav,
+    header:not(.kpgs-report-page header),
+    aside,
+    footer,
+    [data-no-print],
+    .kpgs-report-page form,
+    .kpgs-report-page .pagination,
+    .kpgs-report-page .card-footer {
+        display: none !important;
+    }
+
+    /* Hilangkan batas layout aplikasi saat mencetak. */
+    .min-vh-100,
+    .kpgs-app-main,
+    main,
+    .flex-grow-1 {
+        min-height: 0 !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .kpgs-report-page {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        color: #000 !important;
+    }
+
+    .kpgs-report-page .card {
+        overflow: visible !important;
+        box-shadow: none !important;
+        border: 1px solid #bbb !important;
+        border-radius: 0 !important;
+        break-inside: avoid;
+    }
+
+    .kpgs-report-page .card-header,
+    .kpgs-report-page .table thead th {
+        background: #edf1f5 !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .kpgs-report-page .table-responsive {
+        overflow: visible !important;
+    }
+
+    .kpgs-report-page .table {
+        width: 100% !important;
+        margin-bottom: 0 !important;
+        font-size: 8pt !important;
+        border-collapse: collapse !important;
+    }
+
+    .kpgs-report-page .table th,
+    .kpgs-report-page .table td {
+        padding: 5px !important;
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+    }
+
+    .kpgs-report-page .badge {
+        background: transparent !important;
+        color: #000 !important;
+        border: 1px solid #999;
+    }
+
+    .kpgs-report-page .row {
+        --bs-gutter-x: 0.5rem;
+    }
+
+    .kpgs-report-page .card-body {
+        padding: 0.6rem !important;
+    }
+
+    .kpgs-report-page .card,
+    .kpgs-report-page tr {
+        break-inside: avoid;
+    }
+}
+
+
+/* =========================================================
+   LOGIN KPGS
+   ========================================================= */
+
+.kpgs-guest-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: #F3F6FB;
+}
+
+.kpgs-login-card {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background-color: #174A8B;
+    border-radius: 1rem;
+    box-shadow: 0 12px 32px rgba(23, 74, 139, 0.16);
+}
+
+.kpgs-login-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0.25rem 0 1.25rem;
+}
+
+.kpgs-login-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 84px;
+    height: 84px;
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+    background: #FFFFFF;
+    border-radius: 0.75rem;
+}
+
+.kpgs-login-logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.kpgs-login-brand-title {
+    margin: 0;
+    color: #FFFFFF;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.kpgs-login-brand-subtitle {
+    margin: 0.25rem 0 0;
+    color: #E5EEFF;
+    font-size: 0.9rem;
+}
+
+.kpgs-login-form-card {
+    padding: 1.5rem;
+    background: #FFFFFF;
+    border-radius: 0.75rem;
+}
+
+.kpgs-login-title {
+    margin-bottom: 0.35rem;
+    color: #173B72;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.kpgs-login-description {
+    margin-bottom: 0;
+    color: #64748B;
+    font-size: 0.9rem;
+}
+
+.kpgs-login-form-card .form-label {
+    color: #334155;
+    font-size: 0.9rem;
+}
+
+.kpgs-login-input {
+    min-height: 44px;
+    border: 1px solid #D5DFEC;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.kpgs-login-input:focus {
+    border-color: #2458A6;
+    box-shadow: 0 0 0 0.2rem rgba(36, 88, 166, 0.15);
+}
+
+.kpgs-login-button {
+    min-height: 44px;
+    border-radius: 0.5rem;
+    font-weight: 600;
+}
+
+.kpgs-login-forgot {
+    color: #2458A6;
+    font-size: 0.875rem;
+    text-decoration: none;
+}
+
+.kpgs-login-forgot:hover {
+    color: #173B72;
+    text-decoration: underline;
+}
+
+.kpgs-login-footer {
+    margin: 1.1rem 0 0;
+    color: #E5EEFF;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+@media (max-width: 575.98px) {
+    .kpgs-guest-page {
+        padding: 1rem 0.75rem;
+    }
+
+    .kpgs-login-card {
+        max-width: 380px;
+        padding: 1rem;
+        border-radius: 0.85rem;
+    }
+
+    .kpgs-login-form-card {
+        padding: 1.25rem;
+    }
+
+    .kpgs-login-logo {
+        width: 72px;
+        height: 72px;
+    }
+}
+
+/* Posisi tombol hamburger pada navbar mobile */
+@media (max-width: 991.98px) {
+    nav.navbar > .container-fluid {
+        position: relative;
+    }
+
+    nav.navbar .navbar-brand {
+        margin-right: auto !important;
+    }
+
+    nav.navbar button[data-bs-target="#mobileSidebar"] {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: 0 !important;
+        z-index: 5;
+    }
+}
+
+
+/* Tata letak navbar aplikasi pada mobile */
+@media (max-width: 991.98px) {
+    nav.navbar > .container-fluid {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 0.5rem;
+    }
+
+    nav.navbar .navbar-brand {
+        min-width: 0;
+        flex: 1 1 auto;
+        margin-right: 0 !important;
+    }
+
+    nav.navbar button[data-bs-target="#mobileSidebar"] {
+        position: static !important;
+        transform: none !important;
+        flex: 0 0 auto;
+        margin: 0 !important;
+        order: 3;
+    }
+
+    nav.navbar .position-relative {
+        flex: 0 1 auto;
+        min-width: 0;
+        order: 2;
+    }
+
+    nav.navbar .position-relative > button {
+        max-width: 100%;
+        padding: 0.35rem;
+    }
+}
+
+/* =====================================================
+   KPGS - HALAMAN LAPORAN KEUANGAN
+   ===================================================== */
+
+.kpgs-report-page {
+    width: 100%;
+    min-width: 0;
+    padding: 28px !important;
+    background: #f4f7fb !important;
+    color: #263548;
+    border-radius: 10px;
+}
+
+/* Judul halaman */
+.kpgs-report-page > .d-flex:first-child {
+    padding: 4px 0 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.kpgs-report-page h4 {
+    color: #183b63;
+    font-size: 1.55rem;
+    font-weight: 700;
+}
+
+.kpgs-report-page h5 {
+    color: #234361;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+/* Seluruh kartu */
+.kpgs-report-page .card {
+    height: 100%;
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #e6ebf1 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 3px 12px rgba(31, 55, 80, 0.055) !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.kpgs-report-page .card:hover {
+    box-shadow: 0 5px 16px rgba(31, 55, 80, 0.09) !important;
+}
+
+.kpgs-report-page .card-body {
+    padding: 22px;
+}
+
+/* Angka statistik */
+.kpgs-report-page .fs-4,
+.kpgs-report-page .fs-3 {
+    display: block;
+    margin-top: 6px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+.kpgs-report-page .text-primary {
+    color: #245ca6 !important;
+}
+
+.kpgs-report-page .text-success {
+    color: #16805d !important;
+}
+
+.kpgs-report-page .text-danger {
+    color: #c43d4b !important;
+}
+
+.kpgs-report-page .text-warning {
+    color: #a66b00 !important;
+}
+
+/* Filter tanggal */
+.kpgs-report-page form .form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #40536a;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.kpgs-report-page .form-control {
+    min-height: 43px;
+    border: 1px solid #d5dee9;
+    border-radius: 7px;
+    background-color: #fff;
+}
+
+.kpgs-report-page .form-control:focus {
+    border-color: #6b9ed5;
+    box-shadow: 0 0 0 3px rgba(36, 92, 166, 0.12);
+}
+
+.kpgs-report-page .btn {
+    min-height: 40px;
+    padding: 9px 16px;
+    border-radius: 7px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.kpgs-report-page .btn-primary {
+    background-color: #245ca6;
+    border-color: #245ca6;
+}
+
+.kpgs-report-page .btn-primary:hover {
+    background-color: #19487f;
+    border-color: #19487f;
+}
+
+/* Panel informasi */
+.kpgs-report-page .alert {
+    padding: 17px 20px;
+    background: #edf5ff !important;
+    border: 1px solid #d6e6fa !important;
+    border-left: 4px solid #3977bd !important;
+    border-radius: 8px;
+}
+
+/* Jarak antarbagiannya */
+.kpgs-report-page h5.fw-bold.mb-3 {
+    margin-top: 4px;
+    margin-bottom: 15px !important;
+}
+
+/* Header tabel */
+.kpgs-report-page .card-header {
+    padding: 17px 20px !important;
+    background: #fff !important;
+    border-bottom: 1px solid #e7edf3 !important;
+}
+
+.kpgs-report-page .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.kpgs-report-page .table {
+    margin-bottom: 0 !important;
+    color: #34465b;
+    font-size: 0.875rem;
+    vertical-align: middle;
+}
+
+.kpgs-report-page .table thead th {
+    padding: 14px 16px;
+    color: #38536d;
+    background: #eef4fa !important;
+    border-bottom: 1px solid #dce6f0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.kpgs-report-page .table tbody td {
+    padding: 14px 16px;
+    border-color: #edf0f4;
+}
+
+.kpgs-report-page .table-hover tbody tr:hover > * {
+    background-color: #f6f9fd;
+}
+
+.kpgs-report-page .table .badge {
+    padding: 7px 10px;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Responsif */
+@media (max-width: 991.98px) {
+    .kpgs-report-page {
+        padding: 20px !important;
+    }
+
+    .kpgs-report-page .card-body {
+        padding: 18px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .kpgs-report-page {
+        padding: 14px 10px !important;
+        border-radius: 0;
+    }
+
+    .kpgs-report-page h4 {
+        font-size: 1.3rem;
+    }
+
+    .kpgs-report-page .card-body {
+        padding: 15px;
+    }
+
+    .kpgs-report-page .card-header {
+        padding: 14px !important;
+    }
+
+    .kpgs-report-page .table {
+        font-size: 0.8rem;
+    }
+
+    .kpgs-report-page .table thead th,
+    .kpgs-report-page .table tbody td {
+        padding: 11px 12px;
+    }
+
+    .kpgs-report-page .btn {
+        padding: 8px 12px;
+    }
+}
+
+/* Cetak */
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 12mm;
+    }
+
+    .kpgs-report-page {
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    .kpgs-report-page [data-no-print] {
+        display: none !important;
+    }
+
+    .kpgs-report-page .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        break-inside: avoid;
+    }
+
+    .kpgs-report-page .table-responsive {
+        overflow: visible !important;
+    }
+
+    .kpgs-report-page .table {
+        font-size: 9pt;
+    }
+}
+
+
+/* =========================================
+   NOTIFIKASI KPGS
+   ========================================= */
+
+/* Status belum dibaca: latar biru muda dan garis biru */
+.notifikasi-item.belum-dibaca {
+    background-color: #E7F1FF !important;
+    color: #17365D !important;
+    border-left: 4px solid #0D6EFD !important;
+}
+
+/* Judul */
+.notifikasi-item .notifikasi-judul {
+    color: #343A40 !important;
+    opacity: 1 !important;
+}
+
+/* Pesan */
+.notifikasi-item .notifikasi-pesan {
+    color: #495057 !important;
+    opacity: 1 !important;
+}
+
+/* Judul yang belum dibaca dibuat lebih tegas */
+.notifikasi-item.belum-dibaca .notifikasi-judul {
+    color: #123B70 !important;
+    font-weight: 700 !important;
+}
+
+/* Waktu notifikasi */
+.notifikasi-item .notifikasi-waktu {
+    color: #596579 !important;
+    opacity: 1 !important;
+}
+
+/* Badge Baru */
+.notifikasi-item .notifikasi-badge-baru {
+    background-color: #0D6EFD !important;
+    color: #FFFFFF !important;
+    font-weight: 700;
+}
+
+/* Ikon notifikasi belum dibaca */
+.notifikasi-icon.belum-dibaca {
+    background-color: #0D6EFD !important;
+    color: #FFFFFF !important;
+}
+
+/* Ikon notifikasi sudah dibaca */
+.notifikasi-icon.sudah-dibaca {
+    background-color: #E9ECEF !important;
+    color: #495057 !important;
+}
+
+/* Hover dan fokus keyboard: belum dibaca */
+.notifikasi-item.belum-dibaca:hover,
+.notifikasi-item.belum-dibaca:focus {
+    background-color: #D6E7FF !important;
+    color: #17365D !important;
+}
+
+/* Hover dan fokus keyboard: sudah dibaca */
+.notifikasi-item.sudah-dibaca:hover,
+.notifikasi-item.sudah-dibaca:focus {
+    background-color: #F1F3F5 !important;
+    color: #343A40 !important;
+}
+
+/* Notifikasi yang sudah dibaca */
+.notifikasi-item.sudah-dibaca {
+    background-color: #FFFFFF !important;
+    color: #343A40 !important;
+    border-left: 4px solid #DEE2E6 !important;
+}
+
+/* Label tipe transaksi */
+.notifikasi-tipe {
+    background-color: #FFFFFF !important;
+    color: #495057 !important;
+    border: 1px solid #CED4DA !important;
+}
+
+/* Dropdown navbar agar latarnya selalu putih dan teks jelas */
+.kpgs-notifikasi-dropdown {
+    background-color: #FFFFFF;
+    color: #343A40;
+    overflow: hidden;
+}
+
+/* Hindari warna teks berubah ketika dropdown item difokuskan */
+.kpgs-notifikasi-dropdown .notifikasi-item .notifikasi-judul,
+.kpgs-notifikasi-dropdown .notifikasi-item .notifikasi-pesan,
+.kpgs-notifikasi-dropdown .notifikasi-item .notifikasi-waktu {
+    opacity: 1 !important;
+}
+
