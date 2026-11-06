@@ -315,10 +315,11 @@ Route::middleware('auth')->group(function () {
             [AngsuranController::class, 'detailTransaksiSaya']
         )->name('angsuran.saya.transaksi');
 
+        // Kompatibilitas URL lama: detail angsuran per pinjaman kini digabung ke halaman utama.
         Route::get(
             '/angsuran-saya/{pinjaman}',
-            [AngsuranController::class, 'detailMilikSaya']
-        )->name('angsuran.saya.show');
+            fn () => redirect()->route('angsuran.saya.index')
+        )->whereNumber('pinjaman')->name('angsuran.saya.show');
 
         Route::post(
             '/angsuran-saya/{pinjaman}/bayar',
@@ -488,17 +489,19 @@ Route::middleware('role:kabag')->group(function () {
     |
     */
 
-   Route::middleware('role:cs,bendahara')->group(function () {
-    Route::get(
-        '/laporan/simpanan',
-        [LaporanController::class, 'simpanan']
-    )->name('laporan.simpanan');
+   Route::middleware('role:cs')
+    ->prefix('pencairan-simpanan/cs')
+    ->name('pencairan-simpanan.cs.')
+    ->group(function () {
+        Route::get('/', [PencairanSimpananController::class, 'csIndex'])
+            ->name('index');
 
-    Route::get(
-        '/laporan/simpanan/export',
-        [LaporanController::class, 'exportSimpanan']
-    )->name('laporan.simpanan.export');
-});
+        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'csShow'])
+            ->name('show');
+
+        Route::post('/{pencairanSimpanan}/periksa', [PencairanSimpananController::class, 'periksaCs'])
+            ->name('periksa');
+    });
 
 
     /*

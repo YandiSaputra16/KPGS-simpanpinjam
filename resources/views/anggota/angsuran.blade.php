@@ -73,9 +73,21 @@
                             'ditolak',
                         ])
                         ->count();
+
+                    $angsuranDapatDibayar = $item->angsuran
+                        ->whereIn('status_pembayaran', [
+                            'belum_bayar',
+                            'ditolak',
+                        ]);
+
+                    $adaMenungguVerifikasi = $item->angsuran
+                        ->contains('status_pembayaran', 'menunggu_verifikasi');
+
+                    $formPembayaranId = 'formPembayaran-' . $item->id;
                 @endphp
 
-                <div class="card border-0 shadow-sm mb-4">
+                <div class="card border-0 shadow-sm mb-4" data-kpgs-installment-page>
+
                     <div class="card-header bg-white py-4 px-4">
                         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                             <div>
@@ -131,15 +143,6 @@
                                 @endif
                             </div>
 
-                            <div>
-                                <a
-                                    href="{{ route('angsuran.saya.show', $item) }}"
-                                    class="btn btn-primary"
-                                >
-                                    <i class="bi bi-eye me-1"></i>
-                                    Lihat Detail
-                                </a>
-                            </div>
                         </div>
                     </div>
 
@@ -225,11 +228,13 @@
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-light">
                                         <tr>
+                                            <th class="py-3 text-center">Pilih</th>
                                             <th class="py-3">Ke-</th>
                                             <th class="py-3">Jatuh Tempo</th>
                                             <th class="py-3 text-end">Pokok</th>
                                             <th class="py-3 text-end">Bunga</th>
-                                            <th class="py-3 text-end">Total</th>
+                                            <th class="py-3 text-end">Denda</th>
+                                            <th class="py-3 text-end">Total Tagihan</th>
                                             <th class="py-3">Status</th>
                                             <th class="py-3 text-end">Aksi</th>
                                         </tr>
@@ -260,9 +265,31 @@
                                                 $tanggalJatuhTempo = $angsuran->tanggal_jatuh_tempo
                                                     ? \Carbon\Carbon::parse($angsuran->tanggal_jatuh_tempo)
                                                     : null;
+
+                                                $totalTagihan = (float) $angsuran->total_angsuran
+                                                    + (float) ($angsuran->denda ?? 0);
+
+                                                $dapatDipilih = in_array($status, ['belum_bayar', 'ditolak'], true)
+                                                    && !$adaMenungguVerifikasi;
                                             @endphp
 
                                             <tr>
+                                                <td class="text-center">
+                                                    @if ($dapatDipilih)
+                                                        <input
+                                                            type="checkbox"
+                                                            name="display_angsuran_ids[]"
+                                                            value="{{ $angsuran->id }}"
+                                                            class="form-check-input angsuran-checkbox"
+                                                            data-angsuran-ke="{{ $angsuran->angsuran_ke }}"
+                                                            data-total="{{ $totalTagihan }}"
+                                                            aria-label="Pilih angsuran ke-{{ $angsuran->angsuran_ke }}"
+                                                        >
+                                                    @else
+                                                        <span class="text-muted">—</span>
+                                                    @endif
+                                                </td>
+
                                                 <td>
                                                     <span class="fw-semibold">
                                                         {{ $angsuran->angsuran_ke }}
@@ -285,8 +312,14 @@
                                                     Rp {{ number_format((float) $angsuran->jumlah_bunga, 0, ',', '.') }}
                                                 </td>
 
+                                                <td class="text-end">
+                                                    <span class="{{ (float) ($angsuran->denda ?? 0) > 0 ? 'text-danger fw-semibold' : '' }}">
+                                                        Rp {{ number_format((float) ($angsuran->denda ?? 0), 0, ',', '.') }}
+                                                    </span>
+                                                </td>
+
                                                 <td class="text-end fw-semibold">
-                                                    Rp {{ number_format((float) $angsuran->total_angsuran, 0, ',', '.') }}
+                                                    Rp {{ number_format($totalTagihan, 0, ',', '.') }}
                                                 </td>
 
                                                 <td>
@@ -344,6 +377,12 @@
                                         $tanggalJatuhTempo = $angsuran->tanggal_jatuh_tempo
                                             ? \Carbon\Carbon::parse($angsuran->tanggal_jatuh_tempo)
                                             : null;
+
+                                        $totalTagihan = (float) $angsuran->total_angsuran
+                                            + (float) ($angsuran->denda ?? 0);
+
+                                        $dapatDipilih = in_array($status, ['belum_bayar', 'ditolak'], true)
+                                            && !$adaMenungguVerifikasi;
                                     @endphp
 
                                     <div class="border rounded p-3 mb-3">
@@ -396,7 +435,7 @@
                                             <div class="col-6">
                                                 <div class="text-muted small">Total</div>
                                                 <div class="fw-bold">
-                                                    Rp {{ number_format((float) $angsuran->total_angsuran, 0, ',', '.') }}
+                                                    Rp {{ number_format($totalTagihan, 0, ',', '.') }}
                                                 </div>
                                             </div>
 
@@ -410,18 +449,111 @@
                                             @endif
                                         </div>
 
-                                        <div class="border-top mt-3 pt-3">
+                                        <div class="border-top mt-3 pt-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                            @if ($dapatDipilih)
+                                                <div class="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        name="display_angsuran_ids[]"
+                                                        value="{{ $angsuran->id }}"
+                                                        class="form-check-input angsuran-checkbox"
+                                                        data-angsuran-ke="{{ $angsuran->angsuran_ke }}"
+                                                        data-total="{{ $totalTagihan }}"
+                                                        id="angsuran-mobile-{{ $item->id }}-{{ $angsuran->id }}"
+                                                    >
+                                                    <label class="form-check-label small" for="angsuran-mobile-{{ $item->id }}-{{ $angsuran->id }}">
+                                                        Pilih untuk dibayar
+                                                    </label>
+                                                </div>
+                                            @else
+                                                <span></span>
+                                            @endif
+
                                             <a
                                                 href="{{ route('angsuran.saya.transaksi', $angsuran) }}"
                                                 class="btn btn-sm btn-outline-secondary"
                                             >
                                                 <i class="bi bi-eye me-1"></i>
-                                                Lihat Detail Pembayaran
+                                                Detail Pembayaran
                                             </a>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
+
+                            @if ($angsuranDapatDibayar->isNotEmpty() && !$adaMenungguVerifikasi)
+                                <div class="border-top mt-4 pt-4">
+                                    <div class="d-flex align-items-start gap-2 mb-3">
+                                        <i class="bi bi-credit-card text-primary fs-5"></i>
+                                        <div>
+                                            <h4 class="h5 fw-bold mb-1">Pengajuan Pembayaran</h4>
+                                            <p class="text-muted small mb-0">
+                                                Pilih angsuran sesuai urutan pembayaran, kemudian unggah bukti pembayaran.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <form
+                                        id="{{ $formPembayaranId }}"
+                                        data-form-pembayaran
+                                        method="POST"
+                                        action="{{ route('angsuran.saya.bayar', $item) }}"
+                                        enctype="multipart/form-data"
+                                    >
+                                        @csrf
+
+                                        <div class="mb-3">
+                                            <label for="bukti-pembayaran-{{ $item->id }}" class="form-label fw-semibold">
+                                                Bukti Pembayaran
+                                            </label>
+                                            <input
+                                                id="bukti-pembayaran-{{ $item->id }}"
+                                                name="bukti_pembayaran"
+                                                type="file"
+                                                accept=".jpg,.jpeg,.png,.pdf"
+                                                required
+                                                class="form-control"
+                                            >
+                                            <div class="form-text">
+                                                Format JPG, JPEG, PNG, atau PDF. Maksimal 5 MB.
+                                            </div>
+                                        </div>
+
+                                        <div class="card bg-light border mb-3">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center justify-content-between gap-3">
+                                                    <span class="text-muted">Total pembayaran dipilih</span>
+                                                    <span data-total-pembayaran class="fs-5 fw-bold">Rp 0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-end">
+                                            <button type="submit" data-btn-ajukan-pembayaran disabled class="btn btn-primary">
+                                                <i class="bi bi-send me-1"></i>
+                                                Ajukan Pembayaran
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            @elseif ($adaMenungguVerifikasi)
+                                <div class="alert alert-warning mt-4 mb-0" role="alert">
+                                    <div class="d-flex align-items-start gap-2">
+                                        <i class="bi bi-hourglass-split mt-1"></i>
+                                        <div>
+                                            <div class="fw-semibold">Pembayaran sedang menunggu verifikasi petugas.</div>
+                                            <div class="small">
+                                                Anda dapat mengajukan pembayaran berikutnya setelah pembayaran sebelumnya selesai diverifikasi.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-success mt-4 mb-0" role="alert">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    Seluruh angsuran telah selesai dibayar.
+                                </div>
+                            @endif
 
                         @else
                             <div class="alert alert-secondary mb-0" role="alert">

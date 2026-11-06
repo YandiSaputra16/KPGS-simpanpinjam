@@ -319,7 +319,7 @@
                     $statusTransaksi === 'ditolak'
                         ? 'angsuran.saya.upload-ulang'
                         : 'angsuran.saya.bayar',
-                    $pembayaran->no_pinjaman
+                    $pembayaran->pinjaman_id
                 ) }}"
                 enctype="multipart/form-data"
             >

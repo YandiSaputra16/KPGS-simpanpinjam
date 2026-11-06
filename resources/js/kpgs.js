@@ -32,8 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loanForm = document.querySelector('[data-kpgs-loan-form]');
     if (loanForm) setupLoanForm(loanForm);
 
-    const installmentPage = document.querySelector('[data-kpgs-installment-page]');
-    if (installmentPage) setupInstallmentPage(installmentPage);
+    document.querySelectorAll('[data-kpgs-installment-page]').forEach((installmentPage) => {
+        setupInstallmentPage(installmentPage);
+    });
 
     document.querySelectorAll('[data-kpgs-modal-auto-show="true"]').forEach((modal) => {
         if (window.bootstrap?.Modal) window.bootstrap.Modal.getOrCreateInstance(modal).show();
@@ -125,103 +126,123 @@ function setupLoanForm(root) {
 
 function setupInstallmentPage(root) {
     const checkboxes = Array.from(root.querySelectorAll('.angsuran-checkbox'));
-    const totalElement = root.querySelector('#totalPembayaran');
-    const submitButton = root.querySelector('#btnAjukanPembayaran');
-    const form = root.querySelector('#formPembayaran');
-    
-const updateTotal = () => {
-    const selectedById = new Map();
+    const totalElement = root.querySelector('[data-total-pembayaran]');
+    const submitButton = root.querySelector('[data-btn-ajukan-pembayaran]');
+    const form = root.querySelector('[data-form-pembayaran]');
+
+    if (!checkboxes.length || !form) return;
+
+    const updateTotal = () => {
+        const selectedById = new Map();
+
+        checkboxes.forEach((checkbox) => {
+            if (!checkbox.checked) return;
+
+            if (!selectedById.has(checkbox.value)) {
+                selectedById.set(
+                    checkbox.value,
+                    Number(checkbox.dataset.total || 0)
+                );
+            }
+        });
+
+        const total = Array.from(selectedById.values())
+            .reduce((sum, nominal) => sum + nominal, 0);
+
+        if (totalElement) {
+            totalElement.textContent = formatRupiah(total);
+        }
+
+        if (submitButton) {
+            submitButton.disabled = selectedById.size === 0;
+        }
+    };
+
+    const setSelectionThrough = (targetOrder) => {
+        checkboxes.forEach((checkbox) => {
+            if (Number(checkbox.dataset.angsuranKe) <= targetOrder) {
+                checkbox.checked = true;
+            }
+        });
+        updateTotal();
+    };
+
+    const clearSelectionFrom = (targetOrder) => {
+        checkboxes.forEach((checkbox) => {
+            if (Number(checkbox.dataset.angsuranKe) >= targetOrder) {
+                checkbox.checked = false;
+            }
+        });
+        updateTotal();
+    };
 
     checkboxes.forEach((checkbox) => {
-        if (!checkbox.checked) return;
+        checkbox.addEventListener('change', () => {
+            const installmentOrder = Number(checkbox.dataset.angsuranKe || 0);
 
-        if (!selectedById.has(checkbox.value)) {
-            selectedById.set(
-                checkbox.value,
-                Number(checkbox.dataset.total || 0)
-            );
+            if (checkbox.checked) {
+                setSelectionThrough(installmentOrder);
+            } else {
+                clearSelectionFrom(installmentOrder);
+            }
+        });
+    });
+
+    form.addEventListener('submit', (event) => {
+        const selectedById = new Map();
+
+        checkboxes.forEach((checkbox) => {
+            if (!checkbox.checked || selectedById.has(checkbox.value)) return;
+
+            selectedById.set(checkbox.value, {
+                id: checkbox.value,
+                order: Number(checkbox.dataset.angsuranKe || 0),
+            });
+        });
+
+        const selected = Array.from(selectedById.values())
+            .sort((a, b) => a.order - b.order);
+
+        if (!selected.length) {
+            event.preventDefault();
+            window.alert('Silakan pilih minimal satu angsuran.');
+            return;
         }
+
+        form.querySelectorAll('input[data-generated-angsuran="true"]')
+            .forEach((input) => input.remove());
+
+        selected.forEach((item) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'angsuran_ids[]';
+            input.value = item.id;
+            input.dataset.generatedAngsuran = 'true';
+            form.appendChild(input);
+        });
     });
-
-    const selected = Array.from(selectedById.values());
-
-    const total = selected.reduce(
-        (sum, nominal) => sum + nominal,
-        0
-    );
-
-    if (totalElement) {
-        totalElement.textContent = formatRupiah(total);
-    }
-
-    if (submitButton) {
-        submitButton.disabled = selected.length === 0;
-    }
-};
-
-    const checkUntil = (index) => {
-        const target = checkboxes[index]; if (!target) return;
-        checkboxes.forEach((checkbox) => { if (Number(checkbox.value) <= Number(target.value)) checkbox.checked = true; });
-        updateTotal();
-    };
-    const uncheckFrom = (index) => {
-        const target = checkboxes[index]; if (!target) return;
-        checkboxes.forEach((checkbox) => { if (Number(checkbox.value) >= Number(target.value)) checkbox.checked = false; });
-        updateTotal();
-    };
-    checkboxes.forEach((checkbox, index) => checkbox.addEventListener('change', () => checkbox.checked ? checkUntil(index) : uncheckFrom(index)));
-
-    form?.addEventListener('submit', (event) => {
-    event.preventDefault();
-
-    const selected = [
-        ...new Set(
-            Array.from(
-                root.querySelectorAll(
-                    'input[name="display_angsuran_ids[]"]:checked'
-                )
-            ).map((checkbox) => checkbox.value)
-        )
-    ];
-
-    if (!selected.length) {
-        window.alert('Silakan pilih minimal satu angsuran.');
-        return;
-    }
-
-    form.querySelectorAll(
-        'input[data-generated-angsuran="true"]'
-    ).forEach((input) => input.remove());
-
-    selected.forEach((id) => {
-        const input = document.createElement('input');
-
-        input.type = 'hidden';
-        input.name = 'angsuran_ids[]';
-        input.value = id;
-        input.dataset.generatedAngsuran = 'true';
-
-        form.appendChild(input);
-    });
-
-    form.submit();
-});
 
     const setupToggle = (buttonId, selector) => {
-        const button = root.querySelector(`#${buttonId}`); if (!button) return;
-        const items = root.querySelectorAll(selector); if (!items.length) return;
+        const button = root.querySelector(`#${buttonId}`);
+        if (!button) return;
+
+        const items = root.querySelectorAll(selector);
+        if (!items.length) return;
+
         let expanded = false;
         button.addEventListener('click', () => {
             expanded = !expanded;
             items.forEach((item) => item.classList.toggle('d-none', !expanded));
-            button.innerHTML = expanded ? '<i class="bi bi-chevron-up me-1"></i> Sembunyikan' : '<i class="bi bi-chevron-down me-1"></i> Lihat Lainnya';
+            button.innerHTML = expanded
+                ? '<i class="bi bi-chevron-up me-1"></i> Sembunyikan'
+                : '<i class="bi bi-chevron-down me-1"></i> Lihat Lainnya';
         });
     };
+
     setupToggle('toggleAngsuran', '.angsuran-extra');
     setupToggle('toggleAngsuranMobile', '.angsuran-mobile-item.d-none');
     updateTotal();
 }
-
 
 // Cetak halaman laporan tanpa mencetak navigasi dan kontrol filter.
 document.addEventListener('click', (event) => {

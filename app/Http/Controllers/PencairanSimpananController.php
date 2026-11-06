@@ -112,6 +112,36 @@ class PencairanSimpananController extends Controller
         $items = PencairanSimpanan::with('anggota.user')->where('status', 'menunggu_cs')->latest()->paginate(15);
         return view('pencairan-simpanan.operasional-index', ['items' => $items, 'tahap' => 'cs']);
     }
+public function csShow(PencairanSimpanan $pencairanSimpanan): View
+{
+    abort_unless(
+        auth()->user()->role === 'cs'
+        && auth()->user()->status === 'aktif',
+        403
+    );
+
+    $pencairanSimpanan->load([
+        'anggota.user',
+        'pemeriksaCs',
+        'penyetujuKabag',
+        'bendahara',
+    ]);
+
+    $anggota = $pencairanSimpanan->anggota;
+
+    $kolom = $this->kolomSaldo(
+        $pencairanSimpanan->jenis_simpanan
+    );
+
+    $saldoSimpanan = (float) $anggota->{$kolom};
+
+    return view('pencairan-simpanan.show', [
+        'item' => $pencairanSimpanan,
+        'anggota' => $anggota,
+        'saldoSimpanan' => $saldoSimpanan,
+    ]);
+}
+
 
     public function kabagIndex(): View
     {

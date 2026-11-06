@@ -49,46 +49,6 @@ class AngsuranController extends Controller
         );
     }
 
-    /**
-     * Menampilkan detail angsuran berdasarkan pinjaman.
-     */
-    public function detailMilikSaya(Pinjaman $pinjaman)
-    {
-        $user = Auth::user();
-
-        if ($user->role !== 'anggota') {
-            abort(403);
-        }
-
-        $anggota = $user->anggota;
-
-        if (!$anggota) {
-            abort(403, 'Data anggota belum tersedia.');
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pastikan pinjaman benar-benar milik anggota yang sedang login
-        |--------------------------------------------------------------------------
-        */
-
-        if ((int) $pinjaman->anggota_id !== (int) $anggota->id) {
-            abort(403);
-        }
-
-        $pinjaman->load([
-            'masterPinjaman',
-            'angsuran' => function ($query) {
-                $query->orderBy('angsuran_ke');
-            },
-        ]);
-
-        return view(
-            'anggota.angsuran-detail',
-            compact('pinjaman')
-        );
-    }
-
     public function detailTransaksiSaya(Angsuran $angsuran)
     {
         $user = Auth::user();
@@ -143,6 +103,8 @@ class AngsuranController extends Controller
         }
         $pembayaran = (object) [
             'id' => $angsuran->id,
+
+            'pinjaman_id' => $angsuran->pinjaman_id,
 
             'nomor' => 'Angsuran ke-' . $angsuran->angsuran_ke,
 
@@ -298,10 +260,7 @@ class AngsuranController extends Controller
         }
 
         return redirect()
-            ->route(
-                'angsuran.saya.show',
-                $pinjaman
-            )
+            ->route('angsuran.saya.index')
             ->with(
                 'success',
                 'Pembayaran angsuran berhasil dikirim dan sedang menunggu verifikasi CS/Teller.'
@@ -377,10 +336,7 @@ class AngsuranController extends Controller
         }
 
         return redirect()
-            ->route(
-                'angsuran.saya.show',
-                $pinjaman
-            )
+            ->route('angsuran.saya.index')
             ->with(
                 'success',
                 'Bukti pembayaran berhasil dikirim ulang dan sedang menunggu verifikasi CS/Teller.'

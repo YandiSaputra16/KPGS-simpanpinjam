@@ -12,7 +12,13 @@
     @php
         $rolePengguna = auth()->user()->role ?? '';
 
-        $formatRupiah = fn ($nilai) => 'Rp ' . number_format((float) $nilai, 0, ',', '.');
+        $formatRupiah = fn ($nilai) =>
+            'Rp ' . number_format((float) $nilai, 0, ',', '.');
+
+        $formatTanggal = fn ($tanggal) =>
+            $tanggal
+                ? \Illuminate\Support\Carbon::parse($tanggal)->format('d/m/Y')
+                : '-';
 
         $statusAngsuran = [
             'lunas' => 'Lunas',
@@ -21,14 +27,38 @@
             'ditolak' => 'Ditolak',
         ];
 
-        $transaksiSimpanan = collect($transaksiKas ?? [])
-            ->filter(fn ($kas) => strtolower((string) ($kas->kategori ?? '')) === 'simpanan');
+        $statusPinjaman = [
+            'menunggu_cs' => 'Menunggu CS',
+            'menunggu_ao' => 'Menunggu AO',
+            'menunggu_kabag' => 'Menunggu Kabag',
+            'disetujui' => 'Disetujui',
+            'dicairkan' => 'Dicairkan',
+            'lunas' => 'Lunas',
+            'ditolak' => 'Ditolak',
+        ];
+
+        $statusPinjamanClass = [
+            'menunggu_cs' => 'bg-warning text-dark',
+            'menunggu_ao' => 'bg-warning text-dark',
+            'menunggu_kabag' => 'bg-warning text-dark',
+            'disetujui' => 'bg-primary',
+            'dicairkan' => 'bg-success',
+            'lunas' => 'bg-info text-dark',
+            'ditolak' => 'bg-danger',
+        ];
+
+        $statusAngsuranClass = [
+            'lunas' => 'bg-success',
+            'belum_bayar' => 'bg-secondary',
+            'menunggu_verifikasi' => 'bg-warning text-dark',
+            'ditolak' => 'bg-danger',
+        ];
     @endphp
 
     <div class="container-fluid py-4 kpgs-report-page">
         <div class="container-xxl">
 
-            {{-- JUDUL --}}
+            {{-- JUDUL HALAMAN --}}
             <div class="mb-4">
                 <h4 class="fw-bold mb-1">Ringkasan Keuangan KPGS</h4>
                 <p class="text-muted mb-0">
@@ -36,15 +66,15 @@
                 </p>
             </div>
 
-            {{-- FILTER DAN TOMBOL LAPORAN --}}
-            <div class="card border-0 shadow-sm mb-4 report-panel">
+            {{-- FILTER PERIODE DAN TOMBOL LAPORAN --}}
+            <div class="card border-0 shadow-sm mb-4 report-panel no-print">
                 <div class="card-header bg-white py-3">
                     <h5 class="fw-bold mb-1">
                         <i class="bi bi-calendar-range text-primary me-2"></i>
                         Filter Periode Laporan
                     </h5>
                     <p class="text-muted small mb-0">
-                        Pilih rentang tanggal untuk melihat ringkasan keuangan.
+                        Pilih rentang tanggal untuk melihat laporan keuangan.
                     </p>
                 </div>
 
@@ -121,7 +151,10 @@
                 </div>
             </div>
 
+            {{-- ===================================================== --}}
             {{-- 1. RINGKASAN KAS --}}
+            {{-- ===================================================== --}}
+
             <section class="card border-0 shadow-sm mb-4 report-panel">
                 <div class="card-header bg-white py-3">
                     <div class="d-flex align-items-center gap-3">
@@ -188,6 +221,7 @@
                         </div>
                     </div>
 
+                    {{-- DETAIL TRANSAKSI KAS --}}
                     <div class="accordion report-accordion mt-3" id="detailKas">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingDetailKas">
@@ -201,6 +235,9 @@
                                 >
                                     <i class="bi bi-table me-2 text-primary"></i>
                                     Lihat Detail Transaksi Kas
+                                    <span class="badge bg-primary-subtle text-primary ms-2">
+                                        {{ $transaksiKas->total() ?? 0 }} Data
+                                    </span>
                                 </button>
                             </h2>
 
@@ -211,6 +248,46 @@
                                 data-bs-parent="#detailKas"
                             >
                                 <div class="accordion-body p-0">
+
+                                    {{-- PENCARIAN KAS --}}
+                                    <div class="p-3 border-bottom no-print">
+                                        <form
+                                            method="GET"
+                                            action="{{ route('laporan.keuangan') }}"
+                                            class="row g-2"
+                                        >
+                                            <input type="hidden" name="dari" value="{{ $dari }}">
+                                            <input type="hidden" name="sampai" value="{{ $sampai }}">
+
+                                            <div class="col-12 col-md-8">
+                                                <input
+                                                    type="search"
+                                                    name="search_kas"
+                                                    class="form-control"
+                                                    value="{{ $searchKas ?? '' }}"
+                                                    placeholder="Cari nomor transaksi, jenis, kategori, atau referensi..."
+                                                >
+                                            </div>
+
+                                            <div class="col-12 col-md-4 d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-search me-1"></i>
+                                                    Cari
+                                                </button>
+
+                                                <a
+                                                    href="{{ route('laporan.keuangan', array_filter([
+                                                        'dari' => $dari,
+                                                        'sampai' => $sampai,
+                                                    ])) }}"
+                                                    class="btn btn-outline-secondary"
+                                                >
+                                                    Reset
+                                                </a>
+                                            </div>
+                                        </form>
+                                    </div>
+
                                     <div class="table-responsive">
                                         <table class="table table-hover align-middle mb-0">
                                             <thead class="table-light">
@@ -225,38 +302,67 @@
                                                     <th class="text-end pe-3">Saldo Setelah</th>
                                                 </tr>
                                             </thead>
-                                            <tbody data-search-table>
-                                                @forelse ($transaksiKas ?? [] as $kas)
+
+                                            <tbody>
+                                                @forelse ($transaksiKas as $kas)
                                                     <tr>
-                                                        <td class="px-3">{{ $loop->iteration }}</td>
-                                                        <td class="text-nowrap">
-                                                            {{ \Illuminate\Support\Carbon::parse($kas->tanggal)->format('d/m/Y') }}
+                                                        <td class="px-3">
+                                                            {{ $transaksiKas->firstItem() + $loop->index }}
                                                         </td>
-                                                        <td>{{ $kas->no_transaksi ?? '-' }}</td>
+
+                                                        <td class="text-nowrap">
+                                                            {{ $formatTanggal($kas->tanggal) }}
+                                                        </td>
+
+                                                        <td class="text-nowrap">
+                                                            {{ $kas->no_transaksi ?? '-' }}
+                                                        </td>
+
                                                         <td>
                                                             <span class="badge {{ ($kas->jenis ?? '') === 'masuk' ? 'bg-success' : 'bg-danger' }}">
                                                                 {{ ucfirst($kas->jenis ?? '-') }}
                                                             </span>
                                                         </td>
-                                                        <td>{{ ucfirst($kas->kategori ?? '-') }}</td>
-                                                        <td>{{ $kas->referensi_tipe ?? '-' }}</td>
+
+                                                        <td>
+                                                            {{ ucfirst($kas->kategori ?? '-') }}
+                                                        </td>
+
+                                                        <td>
+                                                            {{ $kas->referensi_tipe ?? '-' }}
+                                                        </td>
+
                                                         <td class="text-end text-nowrap">
                                                             {{ $formatRupiah($kas->jumlah ?? 0) }}
                                                         </td>
+
                                                         <td class="text-end text-nowrap pe-3">
                                                             {{ $formatRupiah($kas->saldo_sesudah ?? 0) }}
                                                         </td>
                                                     </tr>
                                                 @empty
-                                                    <tr data-empty-row>
+                                                    <tr>
                                                         <td colspan="8" class="text-center text-muted py-4">
-                                                            Belum ada transaksi kas pada periode ini.
+                                                            Tidak ada transaksi kas yang sesuai.
                                                         </td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {{-- PAGINATION KAS --}}
+                                    @if ($transaksiKas->hasPages())
+                                        <div class="pagination-wrapper no-print">
+                                            <div class="small text-muted">
+                                                Menampilkan {{ $transaksiKas->firstItem() }}
+                                                sampai {{ $transaksiKas->lastItem() }}
+                                                dari {{ $transaksiKas->total() }} transaksi kas.
+                                            </div>
+
+                                            {{ $transaksiKas->links('pagination::bootstrap-5') }}
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -264,7 +370,10 @@
                 </div>
             </section>
 
+            {{-- ===================================================== --}}
             {{-- 2. RINGKASAN SIMPANAN --}}
+            {{-- ===================================================== --}}
+
             <section class="card border-0 shadow-sm mb-4 report-panel">
                 <div class="card-header bg-white py-3">
                     <div class="d-flex align-items-center gap-3">
@@ -288,9 +397,11 @@
                                     <div class="summary-label">Simpanan Masuk</div>
                                     <i class="bi bi-arrow-down-left-circle fs-4 text-success"></i>
                                 </div>
+
                                 <div class="summary-value text-success">
                                     {{ $formatRupiah($simpananMasuk ?? 0) }}
                                 </div>
+
                                 <div class="summary-description">
                                     Total transaksi kas kategori simpanan yang masuk.
                                 </div>
@@ -303,9 +414,11 @@
                                     <div class="summary-label">Simpanan Keluar</div>
                                     <i class="bi bi-arrow-up-right-circle fs-4 text-danger"></i>
                                 </div>
+
                                 <div class="summary-value text-danger">
                                     {{ $formatRupiah($simpananKeluar ?? 0) }}
                                 </div>
+
                                 <div class="summary-description">
                                     Total transaksi kas kategori simpanan yang keluar.
                                 </div>
@@ -313,6 +426,7 @@
                         </div>
                     </div>
 
+                    {{-- DETAIL TRANSAKSI SIMPANAN --}}
                     <div class="accordion report-accordion mt-3" id="detailSimpanan">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingDetailSimpanan">
@@ -326,6 +440,9 @@
                                 >
                                     <i class="bi bi-table me-2 text-success"></i>
                                     Lihat Detail Transaksi Simpanan
+                                    <span class="badge bg-success-subtle text-success ms-2">
+                                        {{ $transaksiSimpanan->total() ?? 0 }} Data
+                                    </span>
                                 </button>
                             </h2>
 
@@ -336,6 +453,46 @@
                                 data-bs-parent="#detailSimpanan"
                             >
                                 <div class="accordion-body p-0">
+
+                                    {{-- PENCARIAN SIMPANAN --}}
+                                    <div class="p-3 border-bottom no-print">
+                                        <form
+                                            method="GET"
+                                            action="{{ route('laporan.keuangan') }}"
+                                            class="row g-2"
+                                        >
+                                            <input type="hidden" name="dari" value="{{ $dari }}">
+                                            <input type="hidden" name="sampai" value="{{ $sampai }}">
+
+                                            <div class="col-12 col-md-8">
+                                                <input
+                                                    type="search"
+                                                    name="search_simpanan"
+                                                    class="form-control"
+                                                    value="{{ $searchSimpanan ?? '' }}"
+                                                    placeholder="Cari nomor transaksi, jenis, atau referensi simpanan..."
+                                                >
+                                            </div>
+
+                                            <div class="col-12 col-md-4 d-flex gap-2">
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="bi bi-search me-1"></i>
+                                                    Cari
+                                                </button>
+
+                                                <a
+                                                    href="{{ route('laporan.keuangan', array_filter([
+                                                        'dari' => $dari,
+                                                        'sampai' => $sampai,
+                                                    ])) }}"
+                                                    class="btn btn-outline-secondary"
+                                                >
+                                                    Reset
+                                                </a>
+                                            </div>
+                                        </form>
+                                    </div>
+
                                     <div class="table-responsive">
                                         <table class="table table-hover align-middle mb-0">
                                             <thead class="table-light">
@@ -350,38 +507,67 @@
                                                     <th class="text-end pe-3">Saldo Setelah</th>
                                                 </tr>
                                             </thead>
-                                            <tbody data-search-table>
+
+                                            <tbody>
                                                 @forelse ($transaksiSimpanan as $kas)
                                                     <tr>
-                                                        <td class="px-3">{{ $loop->iteration }}</td>
-                                                        <td class="text-nowrap">
-                                                            {{ \Illuminate\Support\Carbon::parse($kas->tanggal)->format('d/m/Y') }}
+                                                        <td class="px-3">
+                                                            {{ $transaksiSimpanan->firstItem() + $loop->index }}
                                                         </td>
-                                                        <td>{{ $kas->no_transaksi ?? '-' }}</td>
+
+                                                        <td class="text-nowrap">
+                                                            {{ $formatTanggal($kas->tanggal) }}
+                                                        </td>
+
+                                                        <td class="text-nowrap">
+                                                            {{ $kas->no_transaksi ?? '-' }}
+                                                        </td>
+
                                                         <td>
                                                             <span class="badge {{ ($kas->jenis ?? '') === 'masuk' ? 'bg-success' : 'bg-danger' }}">
                                                                 {{ ucfirst($kas->jenis ?? '-') }}
                                                             </span>
                                                         </td>
-                                                        <td>{{ ucfirst($kas->kategori ?? '-') }}</td>
-                                                        <td>{{ $kas->referensi_tipe ?? '-' }}</td>
+
+                                                        <td>
+                                                            {{ ucfirst($kas->kategori ?? '-') }}
+                                                        </td>
+
+                                                        <td>
+                                                            {{ $kas->referensi_tipe ?? '-' }}
+                                                        </td>
+
                                                         <td class="text-end text-nowrap">
                                                             {{ $formatRupiah($kas->jumlah ?? 0) }}
                                                         </td>
+
                                                         <td class="text-end text-nowrap pe-3">
                                                             {{ $formatRupiah($kas->saldo_sesudah ?? 0) }}
                                                         </td>
                                                     </tr>
                                                 @empty
-                                                    <tr data-empty-row>
+                                                    <tr>
                                                         <td colspan="8" class="text-center text-muted py-4">
-                                                            Belum ada transaksi simpanan pada periode ini.
+                                                            Tidak ada transaksi simpanan yang sesuai.
                                                         </td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {{-- PAGINATION SIMPANAN --}}
+                                    @if ($transaksiSimpanan->hasPages())
+                                        <div class="pagination-wrapper no-print">
+                                            <div class="small text-muted">
+                                                Menampilkan {{ $transaksiSimpanan->firstItem() }}
+                                                sampai {{ $transaksiSimpanan->lastItem() }}
+                                                dari {{ $transaksiSimpanan->total() }} transaksi simpanan.
+                                            </div>
+
+                                            {{ $transaksiSimpanan->links('pagination::bootstrap-5') }}
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -389,7 +575,10 @@
                 </div>
             </section>
 
+            {{-- ===================================================== --}}
             {{-- 3. RINGKASAN PINJAMAN --}}
+            {{-- ===================================================== --}}
+
             <section class="card border-0 shadow-sm mb-4 report-panel">
                 <div class="card-header bg-white py-3">
                     <div class="d-flex align-items-center gap-3">
@@ -444,6 +633,7 @@
                         </div>
                     </div>
 
+                    {{-- DETAIL PINJAMAN --}}
                     <div class="accordion report-accordion mt-3" id="detailPinjaman">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingDetailPinjaman">
@@ -457,6 +647,9 @@
                                 >
                                     <i class="bi bi-table me-2 text-info"></i>
                                     Lihat Detail Pinjaman
+                                    <span class="badge bg-info-subtle text-info ms-2">
+                                        {{ $pinjamanTerbaru->total() ?? 0 }} Data
+                                    </span>
                                 </button>
                             </h2>
 
@@ -466,116 +659,148 @@
                                 aria-labelledby="headingDetailPinjaman"
                                 data-bs-parent="#detailPinjaman"
                             >
-                                <div class="accordion-body">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th class="px-3">No.</th>
-                    <th>Nomor Pinjaman</th>
-                    <th>Nama Anggota</th>
-                    <th>Jenis Pinjaman</th>
-                    <th>Tanggal Pengajuan</th>
-                    <th class="text-end">Jumlah Pengajuan</th>
-                    <th class="text-end">Disetujui</th>
-                    <th>Tenor</th>
-                    <th>Status</th>
-                    <th>Tanggal Cair</th>
-                </tr>
-            </thead>
+                                <div class="accordion-body p-0">
 
-            <tbody data-search-table>
-                @forelse ($pinjamanTerbaru ?? [] as $pinjaman)
-                    @php
-                        $status = $pinjaman->status ?? '';
+                                    {{-- PENCARIAN PINJAMAN --}}
+                                    <div class="p-3 border-bottom no-print">
+                                        <form
+                                            method="GET"
+                                            action="{{ route('laporan.keuangan') }}"
+                                            class="row g-2"
+                                        >
+                                            <input type="hidden" name="dari" value="{{ $dari }}">
+                                            <input type="hidden" name="sampai" value="{{ $sampai }}">
 
-                        $statusClass = match ($status) {
-                            'dicairkan' => 'bg-success',
-                            'disetujui' => 'bg-primary',
-                            'lunas' => 'bg-info text-dark',
-                            'ditolak' => 'bg-danger',
-                            'menunggu_cs',
-                            'menunggu_ao',
-                            'menunggu_kabag' => 'bg-warning text-dark',
-                            default => 'bg-secondary',
-                        };
+                                            <div class="col-12 col-md-8">
+                                                <input
+                                                    type="search"
+                                                    name="search_pinjaman"
+                                                    class="form-control"
+                                                    value="{{ $searchPinjaman ?? '' }}"
+                                                    placeholder="Cari nomor pinjaman, nama anggota, jenis, atau status..."
+                                                >
+                                            </div>
 
-                        $statusLabel = match ($status) {
-                            'menunggu_cs' => 'Menunggu CS',
-                            'menunggu_ao' => 'Menunggu AO',
-                            'menunggu_kabag' => 'Menunggu Kabag',
-                            'disetujui' => 'Disetujui',
-                            'dicairkan' => 'Dicairkan',
-                            'lunas' => 'Lunas',
-                            'ditolak' => 'Ditolak',
-                            default => ucfirst(str_replace('_', ' ', $status ?: '-')),
-                        };
-                    @endphp
+                                            <div class="col-12 col-md-4 d-flex gap-2">
+                                                <button type="submit" class="btn btn-info text-white">
+                                                    <i class="bi bi-search me-1"></i>
+                                                    Cari
+                                                </button>
 
-                    <tr>
-                        <td class="px-3">{{ $loop->iteration }}</td>
+                                                <a
+                                                    href="{{ route('laporan.keuangan', array_filter([
+                                                        'dari' => $dari,
+                                                        'sampai' => $sampai,
+                                                    ])) }}"
+                                                    class="btn btn-outline-secondary"
+                                                >
+                                                    Reset
+                                                </a>
+                                            </div>
+                                        </form>
+                                    </div>
 
-                        <td class="text-nowrap">
-                            {{ $pinjaman->no_pinjaman ?? '-' }}
-                        </td>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="px-3">No.</th>
+                                                    <th>Nomor Pinjaman</th>
+                                                    <th>Nama Anggota</th>
+                                                    <th>Jenis Pinjaman</th>
+                                                    <th>Tanggal Pengajuan</th>
+                                                    <th class="text-end">Jumlah Pengajuan</th>
+                                                    <th class="text-end">Disetujui</th>
+                                                    <th>Tenor</th>
+                                                    <th>Status</th>
+                                                    <th>Tanggal Cair</th>
+                                                </tr>
+                                            </thead>
 
-                        <td>
-                            {{ $pinjaman->nama_anggota ?? '-' }}
-                        </td>
+                                            <tbody>
+                                                @forelse ($pinjamanTerbaru as $pinjaman)
+                                                    @php
+                                                        $status = $pinjaman->status ?? '';
+                                                    @endphp
 
-                        <td>
-                            {{ $pinjaman->nama_jenis_pinjaman ?? '-' }}
-                        </td>
+                                                    <tr>
+                                                        <td class="px-3">
+                                                            {{ $pinjamanTerbaru->firstItem() + $loop->index }}
+                                                        </td>
 
-                        <td class="text-nowrap">
-                            {{ $pinjaman->tanggal_pengajuan
-                                ? \Illuminate\Support\Carbon::parse($pinjaman->tanggal_pengajuan)->format('d/m/Y')
-                                : '-' }}
-                        </td>
+                                                        <td class="text-nowrap">
+                                                            {{ $pinjaman->no_pinjaman ?? '-' }}
+                                                        </td>
 
-                        <td class="text-end text-nowrap">
-                            {{ $formatRupiah($pinjaman->jumlah_pinjaman ?? 0) }}
-                        </td>
+                                                        <td>
+                                                            {{ $pinjaman->nama_anggota ?? '-' }}
+                                                        </td>
 
-                        <td class="text-end text-nowrap">
-                            {{ $formatRupiah($pinjaman->jumlah_disetujui ?? 0) }}
-                        </td>
+                                                        <td>
+                                                            {{ $pinjaman->nama_jenis_pinjaman ?? '-' }}
+                                                        </td>
 
-                        <td class="text-nowrap">
-                            {{ $pinjaman->tenor ?? '-' }}
-                            {{ $pinjaman->tenor ? 'bulan' : '' }}
-                        </td>
+                                                        <td class="text-nowrap">
+                                                            {{ $formatTanggal($pinjaman->tanggal_pengajuan) }}
+                                                        </td>
 
-                        <td>
-                            <span class="badge {{ $statusClass }}">
-                                {{ $statusLabel }}
-                            </span>
-                        </td>
+                                                        <td class="text-end text-nowrap">
+                                                            {{ $formatRupiah($pinjaman->jumlah_pinjaman ?? 0) }}
+                                                        </td>
 
-                        <td class="text-nowrap">
-                            {{ $pinjaman->tanggal_cair
-                                ? \Illuminate\Support\Carbon::parse($pinjaman->tanggal_cair)->format('d/m/Y')
-                                : '-' }}
-                        </td>
-                    </tr>
-                @empty
-                    <tr data-empty-row>
-                        <td colspan="10" class="text-center text-muted py-4">
-                            Belum ada data pinjaman pada periode ini.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
+                                                        <td class="text-end text-nowrap">
+                                                            {{ $formatRupiah($pinjaman->jumlah_disetujui ?? 0) }}
+                                                        </td>
+
+                                                        <td class="text-nowrap">
+                                                            {{ $pinjaman->tenor ?? '-' }}
+                                                            {{ $pinjaman->tenor ? 'bulan' : '' }}
+                                                        </td>
+
+                                                        <td>
+                                                            <span class="badge {{ $statusPinjamanClass[$status] ?? 'bg-secondary' }}">
+                                                                {{ $statusPinjaman[$status] ?? ucfirst(str_replace('_', ' ', $status ?: '-')) }}
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-nowrap">
+                                                            {{ $formatTanggal($pinjaman->tanggal_cair) }}
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="10" class="text-center text-muted py-4">
+                                                            Tidak ada data pinjaman yang sesuai.
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    {{-- PAGINATION PINJAMAN --}}
+                                    @if ($pinjamanTerbaru->hasPages())
+                                        <div class="pagination-wrapper no-print">
+                                            <div class="small text-muted">
+                                                Menampilkan {{ $pinjamanTerbaru->firstItem() }}
+                                                sampai {{ $pinjamanTerbaru->lastItem() }}
+                                                dari {{ $pinjamanTerbaru->total() }} data pinjaman.
+                                            </div>
+
+                                            {{ $pinjamanTerbaru->links('pagination::bootstrap-5') }}
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
+            {{-- ===================================================== --}}
             {{-- 4. RINGKASAN ANGSURAN --}}
+            {{-- ===================================================== --}}
+
             <section class="card border-0 shadow-sm mb-4 report-panel">
                 <div class="card-header bg-white py-3">
                     <div class="d-flex align-items-center gap-3">
@@ -642,6 +867,7 @@
                         </div>
                     </div>
 
+                    {{-- DETAIL RIWAYAT ANGSURAN --}}
                     <div class="accordion report-accordion mt-3" id="detailAngsuran">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="headingDetailAngsuran">
@@ -655,6 +881,9 @@
                                 >
                                     <i class="bi bi-table me-2 text-warning-emphasis"></i>
                                     Lihat Detail Riwayat Angsuran
+                                    <span class="badge bg-warning-subtle text-warning-emphasis ms-2">
+                                        {{ $angsuranTerbaru->total() ?? 0 }} Data
+                                    </span>
                                 </button>
                             </h2>
 
@@ -665,6 +894,46 @@
                                 data-bs-parent="#detailAngsuran"
                             >
                                 <div class="accordion-body p-0">
+
+                                    {{-- PENCARIAN ANGSURAN --}}
+                                    <div class="p-3 border-bottom no-print">
+                                        <form
+                                            method="GET"
+                                            action="{{ route('laporan.keuangan') }}"
+                                            class="row g-2"
+                                        >
+                                            <input type="hidden" name="dari" value="{{ $dari }}">
+                                            <input type="hidden" name="sampai" value="{{ $sampai }}">
+
+                                            <div class="col-12 col-md-8">
+                                                <input
+                                                    type="search"
+                                                    name="search_angsuran"
+                                                    class="form-control"
+                                                    value="{{ $searchAngsuran ?? '' }}"
+                                                    placeholder="Cari nama anggota, nomor pinjaman, nomor angsuran, atau status..."
+                                                >
+                                            </div>
+
+                                            <div class="col-12 col-md-4 d-flex gap-2">
+                                                <button type="submit" class="btn btn-warning">
+                                                    <i class="bi bi-search me-1"></i>
+                                                    Cari
+                                                </button>
+
+                                                <a
+                                                    href="{{ route('laporan.keuangan', array_filter([
+                                                        'dari' => $dari,
+                                                        'sampai' => $sampai,
+                                                    ])) }}"
+                                                    class="btn btn-outline-secondary"
+                                                >
+                                                    Reset
+                                                </a>
+                                            </div>
+                                        </form>
+                                    </div>
+
                                     <div class="table-responsive">
                                         <table class="table table-hover align-middle mb-0">
                                             <thead class="table-light">
@@ -679,51 +948,71 @@
                                                     <th>Status</th>
                                                 </tr>
                                             </thead>
-                                            <tbody data-search-table>
-                                                @forelse ($angsuranTerbaru ?? [] as $angsuran)
+
+                                            <tbody>
+                                                @forelse ($angsuranTerbaru as $angsuran)
                                                     @php
                                                         $status = $angsuran->status_pembayaran ?? '';
-
-                                                        $statusClass = match ($status) {
-                                                            'lunas' => 'bg-success',
-                                                            'menunggu_verifikasi' => 'bg-warning text-dark',
-                                                            'ditolak' => 'bg-danger',
-                                                            default => 'bg-secondary',
-                                                        };
                                                     @endphp
 
                                                     <tr>
-                                                        <td class="px-3">{{ $loop->iteration }}</td>
-                                                        <td>{{ $angsuran->nama_anggota ?? '-' }}</td>
-                                                        <td>{{ $angsuran->no_pinjaman ?? '-' }}</td>
-                                                        <td>{{ $angsuran->angsuran_ke ?? '-' }}</td>
-                                                        <td class="text-nowrap">
-                                                            {{ $angsuran->tanggal_jatuh_tempo
-                                                                ? \Illuminate\Support\Carbon::parse($angsuran->tanggal_jatuh_tempo)->format('d/m/Y')
-                                                                : '-' }}
+                                                        <td class="px-3">
+                                                            {{ $angsuranTerbaru->firstItem() + $loop->index }}
                                                         </td>
+
+                                                        <td>
+                                                            {{ $angsuran->nama_anggota ?? '-' }}
+                                                        </td>
+
+                                                        <td class="text-nowrap">
+                                                            {{ $angsuran->no_pinjaman ?? '-' }}
+                                                        </td>
+
+                                                        <td>
+                                                            {{ $angsuran->angsuran_ke ?? '-' }}
+                                                        </td>
+
+                                                        <td class="text-nowrap">
+                                                            {{ $formatTanggal($angsuran->tanggal_jatuh_tempo) }}
+                                                        </td>
+
                                                         <td class="text-end text-nowrap">
                                                             {{ $formatRupiah($angsuran->total_angsuran ?? 0) }}
                                                         </td>
+
                                                         <td class="text-end text-nowrap">
                                                             {{ $formatRupiah($angsuran->jumlah_bayar ?? 0) }}
                                                         </td>
+
                                                         <td>
-                                                            <span class="badge {{ $statusClass }}">
+                                                            <span class="badge {{ $statusAngsuranClass[$status] ?? 'bg-secondary' }}">
                                                                 {{ $statusAngsuran[$status] ?? ucfirst(str_replace('_', ' ', $status ?: '-')) }}
                                                             </span>
                                                         </td>
                                                     </tr>
                                                 @empty
-                                                    <tr data-empty-row>
+                                                    <tr>
                                                         <td colspan="8" class="text-center text-muted py-4">
-                                                            Belum ada data angsuran pada periode ini.
+                                                            Tidak ada data angsuran yang sesuai.
                                                         </td>
                                                     </tr>
                                                 @endforelse
                                             </tbody>
                                         </table>
                                     </div>
+
+                                    {{-- PAGINATION ANGSURAN --}}
+                                    @if ($angsuranTerbaru->hasPages())
+                                        <div class="pagination-wrapper no-print">
+                                            <div class="small text-muted">
+                                                Menampilkan {{ $angsuranTerbaru->firstItem() }}
+                                                sampai {{ $angsuranTerbaru->lastItem() }}
+                                                dari {{ $angsuranTerbaru->total() }} data angsuran.
+                                            </div>
+
+                                            {{ $angsuranTerbaru->links('pagination::bootstrap-5') }}
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -731,43 +1020,24 @@
                 </div>
             </section>
 
-            {{-- PENCARIAN DETAIL --}}
-            <section class="card border-0 shadow-sm mb-4 report-panel no-print">
-                <div class="card-body">
-                    <label for="pencarianLaporan" class="form-label fw-semibold">
-                        <i class="bi bi-search text-primary me-1"></i>
-                        Pencarian Detail Laporan
-                    </label>
-
-                    <input
-                        type="search"
-                        id="pencarianLaporan"
-                        class="form-control"
-                        placeholder="Cari nomor transaksi, kategori, nomor pinjaman, nama anggota, atau status..."
-                        autocomplete="off"
-                    >
-
-                    <div class="form-text">
-                        Pencarian menyaring baris pada tabel detail yang tersedia.
-                    </div>
-                    <div id="hasilPencarian" class="small text-muted mt-2" aria-live="polite"></div>
-                </div>
-            </section>
-
-            {{-- PERIODE --}}
+            {{-- INFORMASI PERIODE --}}
             <div class="text-muted small mb-2">
                 Periode laporan:
                 <strong>
-                    {{ !empty($dari) ? \Illuminate\Support\Carbon::parse($dari)->format('d/m/Y') : 'Awal data' }}
+                    {{ !empty($dari) ? $formatTanggal($dari) : 'Awal data' }}
                 </strong>
                 sampai
                 <strong>
-                    {{ !empty($sampai) ? \Illuminate\Support\Carbon::parse($sampai)->format('d/m/Y') : 'Tanggal terakhir' }}
+                    {{ !empty($sampai) ? $formatTanggal($sampai) : 'Tanggal terakhir' }}
                 </strong>.
             </div>
 
         </div>
     </div>
+
+    {{-- ========================================================= --}}
+    {{-- STYLE HALAMAN LAPORAN --}}
+    {{-- ========================================================= --}}
 
     <style>
         .report-panel {
@@ -845,6 +1115,32 @@
             vertical-align: middle;
         }
 
+        .pagination-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            padding: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .pagination-wrapper nav {
+            margin: 0;
+        }
+
+        .pagination-wrapper .pagination {
+            margin-bottom: 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .pagination-wrapper {
+                flex-direction: row;
+            }
+        }
+
         @media (max-width: 767.98px) {
             .kpgs-report-page {
                 padding-left: .75rem;
@@ -861,6 +1157,15 @@
             .summary-card {
                 padding: .95rem;
             }
+
+            .report-accordion .accordion-button {
+                font-size: .9rem;
+            }
+
+            .pagination-wrapper {
+                overflow-x: auto;
+                align-items: flex-start;
+            }
         }
 
         @media print {
@@ -871,12 +1176,8 @@
             nav,
             header,
             aside,
-            .kpgs-report-page form,
-            #pencarianLaporan,
-            #hasilPencarian,
-            .form-text,
-            #tombolCetakLaporan,
             .no-print,
+            .pagination-wrapper,
             .accordion-button::after {
                 display: none !important;
             }
@@ -928,69 +1229,12 @@
         }
     </style>
 
+    {{-- ========================================================= --}}
+    {{-- JAVASCRIPT --}}
+    {{-- ========================================================= --}}
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const inputPencarian = document.getElementById('pencarianLaporan');
-            const areaHasil = document.getElementById('hasilPencarian');
-            const tabelBody = document.querySelectorAll('[data-search-table]');
-
-            if (inputPencarian) {
-                inputPencarian.addEventListener('input', function () {
-                    const kataKunci = this.value.trim().toLocaleLowerCase('id-ID');
-
-                    let jumlahCocok = 0;
-                    let jumlahBarisData = 0;
-
-                    tabelBody.forEach(function (tbody) {
-                        const baris = tbody.querySelectorAll(
-                            'tr:not([data-empty-row]):not([data-search-empty])'
-                        );
-
-                        baris.forEach(function (tr) {
-                            jumlahBarisData++;
-
-                            const teksBaris = tr.textContent.toLocaleLowerCase('id-ID');
-                            const cocok = kataKunci === '' || teksBaris.includes(kataKunci);
-
-                            tr.hidden = !cocok;
-
-                            if (cocok) {
-                                jumlahCocok++;
-                            }
-                        });
-
-                        let barisKosong = tbody.querySelector('[data-search-empty]');
-
-                        if (!barisKosong) {
-                            barisKosong = document.createElement('tr');
-                            barisKosong.setAttribute('data-search-empty', '');
-                            barisKosong.hidden = true;
-
-                            const kolom = document.createElement('td');
-                            kolom.colSpan = 8;
-                            kolom.className = 'text-center text-muted py-3';
-                            kolom.textContent = 'Tidak ada data yang cocok dengan pencarian.';
-
-                            barisKosong.appendChild(kolom);
-                            tbody.appendChild(barisKosong);
-                        }
-
-                        const barisTerlihat = Array.from(baris).some(function (tr) {
-                            return !tr.hidden;
-                        });
-
-                        barisKosong.hidden = kataKunci === '' || barisTerlihat;
-                    });
-
-                    if (areaHasil) {
-                        areaHasil.textContent = kataKunci === ''
-                            ? ''
-                            : jumlahCocok + ' baris cocok dari ' +
-                              jumlahBarisData + ' baris data yang ditampilkan.';
-                    }
-                });
-            }
-
             const tombolCetak = document.getElementById('tombolCetakLaporan');
 
             if (tombolCetak) {

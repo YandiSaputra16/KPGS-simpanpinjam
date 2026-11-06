@@ -296,32 +296,48 @@ $laporanMenus = match ($role) {
 
         @endif
 
-        {{-- ANGGOTA --}}
-        @if ($role === 'anggota')
+        
+{{-- ANGGOTA --}}
+@if ($role === 'anggota')
 
-            <a
-                href="{{ route('pinjaman.anggota.index') }}"
-                class="nav-link rounded px-3 py-2
-                    {{ request()->routeIs('pinjaman.anggota.*')
-                        ? 'bg-light text-dark fw-semibold'
-                        : 'text-secondary' }}"
-            >
-                <i class="bi bi-cash-stack me-2"></i>
-                Pinjaman Saya
-            </a>
+    {{-- PINJAMAN SAYA --}}
+    <a
+        href="{{ route('pinjaman.anggota.index') }}"
+        class="nav-link rounded px-3 py-2 d-flex align-items-center gap-2
+            {{ request()->routeIs('pinjaman.anggota.*')
+                ? 'bg-light text-dark fw-semibold'
+                : 'text-secondary' }}"
+    >
+        <i class="bi bi-cash-stack"></i>
+        <span>Pinjaman Saya</span>
+    </a>
 
-            <a
-                href="{{ route('simpanan.saya.index') }}"
-                class="nav-link rounded px-3 py-2
-                    {{ request()->routeIs('simpanan.saya.*')
-                        ? 'bg-light text-dark fw-semibold'
-                        : 'text-secondary' }}"
-            >
-                <i class="bi bi-piggy-bank me-2"></i>
-                Simpanan Saya
-            </a>
+    {{-- ANGSURAN SAYA --}}
+    <a
+        href="{{ route('angsuran.saya.index') }}"
+        class="nav-link rounded px-3 py-2 d-flex align-items-center gap-2
+            {{ request()->routeIs('angsuran.saya.*')
+                ? 'bg-light text-dark fw-semibold'
+                : 'text-secondary' }}"
+    >
+        <i class="bi bi-calendar-check"></i>
+        <span>Angsuran Saya</span>
+    </a>
 
-        @endif
+    {{-- SIMPANAN SAYA --}}
+    <a
+        href="{{ route('simpanan.saya.index') }}"
+        class="nav-link rounded px-3 py-2 d-flex align-items-center gap-2
+            {{ request()->routeIs('simpanan.saya.*')
+                ? 'bg-light text-dark fw-semibold'
+                : 'text-secondary' }}"
+    >
+        <i class="bi bi-piggy-bank"></i>
+        <span>Simpanan Saya</span>
+    </a>
+
+@endif
+
 
         {{-- PELAPORAN CS DAN AO --}}
         @if ($hasLaporan && in_array($role, ['cs', 'ao'], true))

@@ -505,9 +505,9 @@
 
                                             </div>
 
-                                            <a href="{{ route('angsuran.saya.show', $item) }}"
+                                            <a href="{{ route('angsuran.saya.index') }}"
                                                class="btn btn-sm btn-outline-primary">
-                                                Kelola Angsuran
+                                                Lihat Angsuran
                                             </a>
 
                                         </div>
@@ -678,9 +678,9 @@
 
                                             </div>
 
-                                            <a href="{{ route('angsuran.saya.show', $item) }}"
+                                            <a href="{{ route('angsuran.saya.index') }}"
                                                class="btn btn-sm btn-outline-primary">
-                                                Kelola Angsuran
+                                                Lihat Angsuran
                                             </a>
 
                                         </div>

@@ -29,6 +29,7 @@ class Notifikasi extends Model  // ← ganti nama class
 
     protected $fillable = [
         'user_id',
+        'kas_id',
         'judul',
         'pesan',
         'tipe',
@@ -51,6 +52,11 @@ class Notifikasi extends Model  // ← ganti nama class
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function kas(): BelongsTo
+    {
+        return $this->belongsTo(Kas::class);
     }
 
     /*
@@ -171,6 +177,12 @@ class Notifikasi extends Model  // ← ganti nama class
         }
 
         $teks = $judul . ' ' . $pesan;
+        // Notifikasi transaksi kas diarahkan ke laporan keuangan.
+        if ($tipe === self::TIPE_KAS) {
+            return Route::has('laporan.keuangan')
+                ? route('laporan.keuangan', [], false)
+                : null;
+        }
         $routeName = null;
         $routeParameters = [];
 
@@ -190,8 +202,8 @@ class Notifikasi extends Model  // ← ganti nama class
                                 return route('angsuran.saya.transaksi', $angsuran->id, false);
                             }
                         }
-                        $routeName = 'angsuran.saya.show';
-                        $routeParameters = [$pinjaman->id];
+                        $routeName = 'angsuran.saya.index';
+                        $routeParameters = [];
                     } elseif ($user->role === 'cs') {
                         $query = Angsuran::query()->where('pinjaman_id', $pinjaman->id);
                         if (stripos($teks, 'verifikasi') !== false || stripos($teks, 'pembayaran') !== false) {
@@ -211,11 +223,13 @@ class Notifikasi extends Model  // ← ganti nama class
                         'ao' => 'pinjaman.ao.show',
                         'kabag' => 'pinjaman.kabag.show',
                         'bendahara' => 'pinjaman.bendahara.show',
-                        // Akses anggota diarahkan ke detail pinjaman pada modul angsuran.
-                        'anggota' => 'angsuran.saya.show',
+                        // Anggota diarahkan ke daftar pinjaman miliknya.
+                        'anggota' => 'pinjaman.anggota.index',
                         default => null,
                     };
-                    $routeParameters = [$pinjaman->id];
+                    $routeParameters = $user->role === 'anggota'
+                        ? []
+                        : [$pinjaman->id];
                 }
             }
         }

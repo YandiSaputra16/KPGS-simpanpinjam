@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class Kas extends Model
@@ -71,19 +72,12 @@ class Kas extends Model
         string $dari,
         string $sampai
     ): Builder {
-        return $query->whereBetween(
-            'tanggal',
-            [$dari, $sampai]
-        );
+        return $query->whereBetween('tanggal', [$dari, $sampai]);
     }
 
-    public function scopeTahunIni(
-        Builder $query
-    ): Builder {
-        return $query->whereYear(
-            'tanggal',
-            now()->year
-        );
+    public function scopeTahunIni(Builder $query): Builder
+    {
+        return $query->whereYear('tanggal', now()->year);
     }
 
     /*
@@ -121,23 +115,14 @@ class Kas extends Model
         ?int $tahun = null,
         ?int $bulan = null
     ): float {
-        $query = self::where(
-            'jenis',
-            'masuk'
-        );
+        $query = self::where('jenis', 'masuk');
 
         if ($tahun) {
-            $query->whereYear(
-                'tanggal',
-                $tahun
-            );
+            $query->whereYear('tanggal', $tahun);
         }
 
         if ($bulan) {
-            $query->whereMonth(
-                'tanggal',
-                $bulan
-            );
+            $query->whereMonth('tanggal', $bulan);
         }
 
         return (float) $query->sum('jumlah');
@@ -147,23 +132,14 @@ class Kas extends Model
         ?int $tahun = null,
         ?int $bulan = null
     ): float {
-        $query = self::where(
-            'jenis',
-            'keluar'
-        );
+        $query = self::where('jenis', 'keluar');
 
         if ($tahun) {
-            $query->whereYear(
-                'tanggal',
-                $tahun
-            );
+            $query->whereYear('tanggal', $tahun);
         }
 
         if ($bulan) {
-            $query->whereMonth(
-                'tanggal',
-                $bulan
-            );
+            $query->whereMonth('tanggal', $bulan);
         }
 
         return (float) $query->sum('jumlah');
@@ -173,15 +149,8 @@ class Kas extends Model
         ?int $tahun = null,
         ?int $bulan = null
     ): array {
-        $masuk = self::getTotalMasuk(
-            $tahun,
-            $bulan
-        );
-
-        $keluar = self::getTotalKeluar(
-            $tahun,
-            $bulan
-        );
+        $masuk = self::getTotalMasuk($tahun, $bulan);
+        $keluar = self::getTotalKeluar($tahun, $bulan);
 
         return [
             'total_masuk' => $masuk,
@@ -200,29 +169,88 @@ class Kas extends Model
     {
         $tahun = now()->year;
 
-        $last = self::whereYear(
-            'created_at',
-            $tahun
-        )
+        $last = self::whereYear('created_at', $tahun)
             ->orderBy('id', 'desc')
             ->first();
 
         $urutan = $last
-            ? ((int) substr(
-                $last->no_transaksi,
-                -5
-            )) + 1
+            ? ((int) substr($last->no_transaksi, -5)) + 1
             : 1;
 
-        return 'TRX-' .
-            $tahun .
-            '-' .
-            str_pad(
-                $urutan,
-                5,
-                '0',
-                STR_PAD_LEFT
+        return 'TRX-' . $tahun . '-' . str_pad(
+            $urutan,
+            5,
+            '0',
+            STR_PAD_LEFT
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | NOTIFIKASI BENDAHARA
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Mengirim notifikasi kepada seluruh Bendahara aktif.
+     *
+     * Satu transaksi kas hanya menghasilkan satu notifikasi
+     * untuk setiap pengguna Bendahara.
+     */
+    private static function kirimNotifikasiBendahara(self $kas): void
+    {
+        $bendahara = User::query()
+            ->where('role', 'bendahara')
+            ->where('status', 'aktif')
+            ->get(['id']);
+
+        if ($bendahara->isEmpty()) {
+            return;
+        }
+
+        $jenis = $kas->jenis === 'masuk'
+            ? 'Kas Masuk'
+            : 'Kas Keluar';
+
+        $kategori = ucfirst(
+            str_replace('_', ' ', $kas->kategori ?? 'lainnya')
+        );
+
+        $jumlah = 'Rp ' . number_format(
+            (float) $kas->jumlah,
+            0,
+            ',',
+            '.'
+        );
+
+        $judul = 'Transaksi Kas Baru';
+
+        $pesan = sprintf(
+            '%s kategori %s sebesar %s dengan nomor transaksi %s telah berhasil dicatat dalam buku kas.',
+            $jenis,
+            $kategori,
+            $jumlah,
+            $kas->no_transaksi
+        );
+
+        $link = route('laporan.keuangan', [], false);
+
+        foreach ($bendahara as $user) {
+            Notifikasi::firstOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'kas_id' => $kas->id,
+                ],
+                [
+                    'judul' => $judul,
+                    'pesan' => $pesan,
+                    'tipe' => Notifikasi::TIPE_KAS,
+                    'is_read' => false,
+                    'read_at' => null,
+                    'link' => $link,
+                ]
             );
+        }
     }
 
     /*
@@ -254,22 +282,15 @@ class Kas extends Model
         }
 
         /*
-         * Cegah transaksi sumber yang sama
-         * dicatat dua kali ke buku kas.
+         * Cegah transaksi sumber yang sama dicatat dua kali.
          */
         if (
             !empty($data['referensi_tipe'])
             && isset($data['referensi_id'])
         ) {
             $duplikat = self::query()
-                ->where(
-                    'referensi_tipe',
-                    $data['referensi_tipe']
-                )
-                ->where(
-                    'referensi_id',
-                    $data['referensi_id']
-                )
+                ->where('referensi_tipe', $data['referensi_tipe'])
+                ->where('referensi_id', $data['referensi_id'])
                 ->exists();
 
             if ($duplikat) {
@@ -281,17 +302,14 @@ class Kas extends Model
         }
 
         /*
-         * Ambil saldo terakhir sekaligus mengunci
-         * baris terakhir selama transaksi database aktif.
+         * Ambil saldo terakhir.
          */
         $saldoSebelum = self::query()
             ->lockForUpdate()
             ->orderByDesc('id')
             ->value('saldo_sesudah');
 
-        $saldoSebelum = (float) (
-            $saldoSebelum ?? 0
-        );
+        $saldoSebelum = (float) ($saldoSebelum ?? 0);
 
         if (
             ($data['jenis'] ?? null) === 'keluar'
@@ -299,13 +317,8 @@ class Kas extends Model
         ) {
             throw ValidationException::withMessages([
                 'jumlah' =>
-                    "Saldo kas tidak mencukupi. Saldo saat ini: Rp "
-                    . number_format(
-                        $saldoSebelum,
-                        0,
-                        ',',
-                        '.'
-                    ),
+                    'Saldo kas tidak mencukupi. Saldo saat ini: Rp '
+                    . number_format($saldoSebelum, 0, ',', '.'),
             ]);
         }
 
@@ -313,20 +326,36 @@ class Kas extends Model
             ? $saldoSebelum + $jumlah
             : $saldoSebelum - $jumlah;
 
-        return self::create(
+        /*
+         * Simpan transaksi kas.
+         */
+        $kas = self::create(
             array_merge(
                 $data,
                 [
-                    'no_transaksi' =>
-                        self::generateNomor(),
-
-                    'saldo_sebelum' =>
-                        $saldoSebelum,
-
-                    'saldo_sesudah' =>
-                        $saldoSesudah,
+                    'no_transaksi' => self::generateNomor(),
+                    'saldo_sebelum' => $saldoSebelum,
+                    'saldo_sesudah' => $saldoSesudah,
                 ]
             )
         );
+
+        /*
+         * Kirim notifikasi setelah transaksi database commit.
+         *
+         * Jika tidak ada transaksi database aktif,
+         * notifikasi langsung dibuat setelah penyimpanan kas.
+         */
+        $kirimNotifikasi = static function () use ($kas): void {
+            self::kirimNotifikasiBendahara($kas);
+        };
+
+        if (DB::transactionLevel() > 0) {
+            DB::afterCommit($kirimNotifikasi);
+        } else {
+            $kirimNotifikasi();
+        }
+
+        return $kas;
     }
 }

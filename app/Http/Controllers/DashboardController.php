@@ -9,6 +9,7 @@ use App\Models\Kas;
 use App\Models\Pinjaman;
 use App\Models\Simpanan;
 use App\Models\User;
+use App\Models\PencairanSimpanan;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -95,30 +96,63 @@ class DashboardController extends Controller
     }
 
     /**
-     * Dashboard Customer Service.
-     */
-    private function csDashboard(): array
-    {
-        return [
-            'totalAnggota' => Anggota::query()
-                ->where('status_keanggotaan', 'aktif')
-                ->count(),
+ * Dashboard Customer Service.
+ */
+private function csDashboard(): array
+{
+    return [
+        // Jumlah anggota aktif.
+        'totalAnggota' => Anggota::query()
+            ->where('status_keanggotaan', 'aktif')
+            ->count(),
 
-            'menungguCS' => Pinjaman::query()
-                ->where('status', 'menunggu_cs')
-                ->count(),
+        // Jumlah pengajuan pinjaman yang menunggu pemeriksaan CS.
+        'menungguCS' => Pinjaman::query()
+            ->where('status', 'menunggu_cs')
+            ->count(),
 
-            'pinjamanAktif' => Pinjaman::query()
-                ->whereIn('status', self::STATUS_PINJAMAN_AKTIF)
-                ->count(),
+        // Jumlah pinjaman aktif.
+        'pinjamanAktif' => Pinjaman::query()
+            ->whereIn('status', self::STATUS_PINJAMAN_AKTIF)
+            ->count(),
 
-            'pengajuanCS' => Pinjaman::query()
-                ->with(['anggota.user'])
-                ->where('status', 'menunggu_cs')
-                ->latest()
-                ->get(),
-        ];
-    }
+        // Jumlah angsuran yang menunggu verifikasi CS/Teller.
+        'menungguVerifikasiAngsuran' => Angsuran::query()
+            ->menungguVerifikasi()
+            ->count(),
+
+        // Jumlah pengajuan pencairan simpanan yang menunggu pemeriksaan CS.
+        'menungguPencairanSimpanan' => PencairanSimpanan::query()
+            ->where('status', 'menunggu_cs')
+            ->count(),
+
+        // Daftar pengajuan pinjaman yang menunggu pemeriksaan CS.
+        'pengajuanCS' => Pinjaman::query()
+            ->with(['anggota.user'])
+            ->where('status', 'menunggu_cs')
+            ->latest()
+            ->get(),
+
+        // Lima pembayaran angsuran terbaru yang menunggu verifikasi.
+        'pengajuanAngsuran' => Angsuran::query()
+            ->with([
+                'pinjaman.anggota.user',
+            ])
+            ->menungguVerifikasi()
+            ->orderByDesc('tanggal_bayar')
+            ->orderByDesc('id')
+            ->limit(5)
+            ->get(),
+
+        // Lima pengajuan pencairan simpanan terbaru yang menunggu pemeriksaan CS.
+        'pengajuanPencairan' => PencairanSimpanan::query()
+            ->with(['anggota.user'])
+            ->where('status', 'menunggu_cs')
+            ->latest()
+            ->limit(5)
+            ->get(),
+    ];
+}
 
     /**
  * Dashboard Account Officer.
