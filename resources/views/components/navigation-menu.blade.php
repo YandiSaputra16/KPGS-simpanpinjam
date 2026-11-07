@@ -207,6 +207,18 @@ $laporanMenus = match ($role) {
                 Analisis Pinjaman
             </a>
 
+<a
+    href="{{ route('data-anggota.ao.index') }}"
+    class="nav-link rounded px-3 py-2
+        {{ request()->routeIs('data-anggota.ao.*')
+            ? 'bg-light text-dark fw-semibold'
+            : 'text-secondary' }}"
+>
+    <i class="bi bi-people me-2"></i>
+    Data Anggota
+</a>
+
+
             <a
                 href="{{ route('pinjaman.ao.index', ['filter' => 'riwayat']) }}"
                 class="nav-link rounded px-3 py-2

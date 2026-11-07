@@ -17,6 +17,7 @@ use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\ExportLaporanKeuanganController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\ExportLaporanController;
+use App\Http\Controllers\DataAnggotaController;
 
 
 /*
@@ -390,6 +391,18 @@ Route::middleware('auth')->group(function () {
             '/pinjaman/ao/{pinjaman}/tolak',
             [PinjamanController::class, 'aoTolak']
         )->name('pinjaman.ao.tolak');
+
+        // DATA ANGGOTA - AO
+        Route::get(
+            '/data-anggota',
+            [DataAnggotaController::class, 'index']
+        )->name('data-anggota.ao.index');
+
+        Route::get(
+            '/data-anggota/{anggota}',
+            [DataAnggotaController::class, 'show']
+        )->whereNumber('anggota')
+        ->name('data-anggota.ao.show');
     });
 
 
