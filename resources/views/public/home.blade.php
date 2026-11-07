@@ -1,3 +1,4 @@
+
 <x-public-layout :pengaturan="$pengaturan">
     <x-slot name="title">
         Beranda
@@ -5,7 +6,7 @@
 
     {{-- Hero --}}
     <section class="bg-white">
-        <div class="container py-5">
+        <div class="container-fluid px-4 px-xl-5 py-5">
             <div class="row align-items-center g-5 py-lg-5">
 
                 <div class="col-12 col-lg-6">
@@ -21,18 +22,14 @@
                     </p>
 
                     <div class="d-flex flex-wrap gap-3 mt-4">
-                        <a
-                            href="{{ route('login') }}"
-                            class="btn btn-primary px-4 py-3"
-                        >
+                        <a href="{{ route('login') }}"
+                           class="btn btn-primary px-4 py-3">
                             <i class="bi bi-box-arrow-in-right me-1"></i>
                             Login Sistem
                         </a>
 
-                        <a
-                            href="#tentang"
-                            class="btn btn-outline-secondary px-4 py-3"
-                        >
+                        <a href="#tentang"
+                           class="btn btn-outline-secondary px-4 py-3">
                             <i class="bi bi-info-circle me-1"></i>
                             Mengenal KPGS
                         </a>
@@ -57,13 +54,10 @@
     </section>
 
     {{-- Tentang --}}
-    <section
-        id="tentang"
-        class="bg-light"
-    >
-        <div class="container py-5">
+    <section id="tentang" class="bg-light">
+        <div class="container-fluid px-4 px-xl-5 py-5">
 
-            <div class="col-12 col-lg-9">
+            <div class="col-12">
                 <span class="small fw-semibold text-primary text-uppercase">
                     Tentang KPGS
                 </span>
@@ -135,13 +129,10 @@
     </section>
 
     {{-- Layanan --}}
-    <section
-        id="layanan"
-        class="bg-white"
-    >
-        <div class="container py-5">
+    <section id="layanan" class="bg-white">
+        <div class="container-fluid px-4 px-xl-5 py-5">
 
-            <div class="col-12 col-lg-9">
+            <div class="col-12">
                 <span class="small fw-semibold text-primary text-uppercase">
                     Layanan
                 </span>
@@ -159,13 +150,10 @@
     </section>
 
     {{-- Keanggotaan --}}
-    <section
-        id="keanggotaan"
-        class="bg-light"
-    >
-        <div class="container py-5">
+    <section id="keanggotaan" class="bg-light">
+        <div class="container-fluid px-4 px-xl-5 py-5">
 
-            <div class="col-12 col-lg-9">
+            <div class="col-12">
                 <span class="small fw-semibold text-primary text-uppercase">
                     Keanggotaan
                 </span>
@@ -183,11 +171,8 @@
     </section>
 
     {{-- Berita Terbaru --}}
-    <section
-        id="berita"
-        class="bg-light"
-    >
-        <div class="container py-5">
+    <section id="berita" class="bg-light">
+        <div class="container-fluid px-4 px-xl-5 py-5">
 
             <div class="d-flex flex-column flex-sm-row align-items-sm-end justify-content-between gap-3">
                 <div>
@@ -243,6 +228,16 @@
                                         <p class="small text-secondary lh-lg mt-3 mb-0">
                                             {{ $berita->ringkasan }}
                                         </p>
+                                        {{-- Tombol menuju halaman seluruh berita --}}
+<div class="mt-4">
+    <a
+        href="{{ route('public.news.index') }}"
+        class="btn btn-outline-primary btn-sm"
+    >
+        Baca Selengkapnya
+        <i class="bi bi-arrow-right ms-1"></i>
+    </a>
+</div>
                                     @endif
                                 </div>
 
@@ -275,13 +270,10 @@
     </section>
 
     {{-- Pinjaman --}}
-    <section
-        id="pinjaman"
-        class="bg-white"
-    >
-        <div class="container py-5">
+    <section id="pinjaman" class="bg-white">
+        <div class="container-fluid px-4 px-xl-5 py-5">
 
-            <div class="col-12 col-lg-9">
+            <div class="col-12">
                 <span class="small fw-semibold text-primary text-uppercase">
                     Pinjaman
                 </span>
@@ -296,10 +288,8 @@
             </div>
 
             <div class="mt-4">
-                <a
-                    href="{{ route('login') }}"
-                    class="btn btn-primary px-4 py-3"
-                >
+                <a href="{{ route('login') }}"
+                   class="btn btn-primary px-4 py-3">
                     <i class="bi bi-box-arrow-in-right me-1"></i>
                     Login untuk Mengakses Sistem
                 </a>

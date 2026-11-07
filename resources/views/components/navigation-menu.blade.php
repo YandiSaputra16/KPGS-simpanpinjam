@@ -220,82 +220,119 @@ $laporanMenus = match ($role) {
 
         @endif
 
-        {{-- KEPALA BAGIAN --}}
-        @if ($role === 'kabag')
+       
+{{-- KEPALA BAGIAN --}}
+@if ($role === 'kabag')
 
-            <a
-                href="{{ route('pinjaman.kabag.index') }}"
-                class="nav-link rounded px-3 py-2
-                    {{ $isKabagIndex && ! $isKabagRiwayat
-                        ? 'bg-light text-dark fw-semibold'
-                        : 'text-secondary' }}"
-            >
-                <i class="bi bi-clipboard-check me-2"></i>
-                Persetujuan Pinjaman
-            </a>
+    {{-- SIMPANAN --}}
+    <a
+        href="{{ route('pencairan-simpanan.kabag.index') }}"
+        class="nav-link rounded px-3 py-2
+            {{ request()->routeIs('pencairan-simpanan.kabag.*')
+                ? 'bg-light text-dark fw-semibold'
+                : 'text-secondary' }}"
+    >
+        <i class="bi bi-piggy-bank me-2"></i>
+        Simpanan
+    </a>
 
-            @if (Route::has('kabag.activities'))
-                <a
-                    href="{{ route('kabag.activities') }}"
-                    class="nav-link rounded px-3 py-2
-                        {{ request()->routeIs('kabag.activities')
-                            ? 'bg-light text-dark fw-semibold'
-                            : 'text-secondary' }}"
-                >
-                    <i class="bi bi-activity me-2"></i>
-                    Aktivitas Sistem
-                </a>
-            @endif
+    {{-- PINJAMAN --}}
+    <a
+        href="{{ route('pinjaman.kabag.index') }}"
+        class="nav-link rounded px-3 py-2
+            {{ request()->routeIs('pinjaman.kabag.*')
+                ? 'bg-light text-dark fw-semibold'
+                : 'text-secondary' }}"
+    >
+        <i class="bi bi-cash-stack me-2"></i>
+        Pinjaman
+    </a>
 
-            {{-- PELAPORAN KABAG --}}
-    
+    {{-- AKTIVITAS SISTEM --}}
+    @if (Route::has('kabag.activities'))
+        <a
+            href="{{ route('kabag.activities') }}"
+            class="nav-link rounded px-3 py-2
+                {{ request()->routeIs('kabag.activities')
+                    ? 'bg-light text-dark fw-semibold'
+                    : 'text-secondary' }}"
+        >
+            <i class="bi bi-activity me-2"></i>
+            Aktivitas Sistem
+        </a>
+    @endif
 
-            @if (Route::has('laporan.keuangan'))
-                <a
-                    href="{{ route('laporan.keuangan') }}"
-                    class="nav-link rounded px-3 py-2
-                        {{ request()->routeIs('laporan.keuangan')
-                            ? 'bg-light text-dark fw-semibold'
-                            : 'text-secondary' }}"
-                >
-                    <i class="bi bi-file-earmark-bar-graph me-2"></i>
-                    Laporan Keuangan
-                </a>
-            @endif
+    {{-- LAPORAN KEUANGAN --}}
+    @if (Route::has('laporan.keuangan'))
+        <a
+            href="{{ route('laporan.keuangan') }}"
+            class="nav-link rounded px-3 py-2
+                {{ request()->routeIs('laporan.keuangan')
+                    ? 'bg-light text-dark fw-semibold'
+                    : 'text-secondary' }}"
+        >
+            <i class="bi bi-file-earmark-bar-graph me-2"></i>
+            Laporan Keuangan
+        </a>
+    @endif
 
-        @endif
+@endif
 
-        {{-- BENDAHARA --}}
-        @if ($role === 'bendahara')
 
-            <a
-                href="{{ route('pinjaman.bendahara.index') }}"
-                class="nav-link rounded px-3 py-2
-                    {{ request()->routeIs('pinjaman.bendahara.*')
-                        ? 'bg-light text-dark fw-semibold'
-                        : 'text-secondary' }}"
-            >
-                <i class="bi bi-clipboard-data me-2"></i>
-                Pemantauan &amp; Pencairan Pinjaman
-            </a>
+{{-- BENDAHARA --}}
+@if ($role === 'bendahara')
 
-            {{-- PELAPORAN BENDAHARA --}}
+    {{-- SIMPANAN DAN PENCAIRAN SIMPANAN --}}
+    <a
+        href="{{ route('pencairan-simpanan.bendahara.index') }}"
+        class="nav-link rounded px-3 py-2
+            {{ request()->routeIs('pencairan-simpanan.bendahara.*')
+                ? 'bg-light text-dark fw-semibold'
+                : 'text-secondary' }}"
+    >
+        <i class="bi bi-piggy-bank me-2"></i>
+        Simpanan
+    </a>
 
-            @if (Route::has('laporan.keuangan'))
-                <a
-                    href="{{ route('laporan.keuangan') }}"
-                    class="nav-link rounded px-3 py-2
-                        {{ request()->routeIs('laporan.keuangan')
-                            ? 'bg-light text-dark fw-semibold'
-                            : 'text-secondary' }}"
-                >
-                    <i class="bi bi-file-earmark-bar-graph me-2"></i>
-                    Laporan Keuangan
-                </a>
-            @endif
+    {{-- PINJAMAN DAN PENCAIRAN PINJAMAN --}}
+    <a
+        href="{{ route('pinjaman.bendahara.index') }}"
+        class="nav-link rounded px-3 py-2
+            {{ request()->routeIs('pinjaman.bendahara.*')
+                ? 'bg-light text-dark fw-semibold'
+                : 'text-secondary' }}"
+    >
+        <i class="bi bi-cash-stack me-2"></i>
+        Pinjaman
+    </a>
 
-        @endif
+    {{-- KAS --}}
+    <a
+        href="{{ route('laporan.kas') }}"
+        class="nav-link rounded px-3 py-2
+            {{ request()->routeIs('laporan.kas')
+                ? 'bg-light text-dark fw-semibold'
+                : 'text-secondary' }}"
+    >
+        <i class="bi bi-wallet2 me-2"></i>
+        Kas
+    </a>
 
+    {{-- LAPORAN KEUANGAN --}}
+    @if (Route::has('laporan.keuangan'))
+        <a
+            href="{{ route('laporan.keuangan') }}"
+            class="nav-link rounded px-3 py-2
+                {{ request()->routeIs('laporan.keuangan')
+                    ? 'bg-light text-dark fw-semibold'
+                    : 'text-secondary' }}"
+        >
+            <i class="bi bi-file-earmark-bar-graph me-2"></i>
+            Laporan Keuangan
+        </a>
+    @endif
+
+@endif
         
 {{-- ANGGOTA --}}
 @if ($role === 'anggota')

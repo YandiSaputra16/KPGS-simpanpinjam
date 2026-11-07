@@ -489,20 +489,6 @@ Route::middleware('role:kabag')->group(function () {
     |
     */
 
-   Route::middleware('role:cs')
-    ->prefix('pencairan-simpanan/cs')
-    ->name('pencairan-simpanan.cs.')
-    ->group(function () {
-        Route::get('/', [PencairanSimpananController::class, 'csIndex'])
-            ->name('index');
-
-        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'csShow'])
-            ->name('show');
-
-        Route::post('/{pencairanSimpanan}/periksa', [PencairanSimpananController::class, 'periksaCs'])
-            ->name('periksa');
-    });
-
 
     /*
     |--------------------------------------------------------------------------
@@ -561,29 +547,76 @@ Route::middleware('role:kabag')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware('role:anggota')->group(function () {
-        Route::get('/pencairan-simpanan-saya', [PencairanSimpananController::class, 'anggotaIndex'])
-            ->name('pencairan-simpanan.saya.index');
-        Route::get('/pencairan-simpanan-saya/ajukan', [PencairanSimpananController::class, 'create'])
-            ->name('pencairan-simpanan.saya.create');
-        Route::post('/pencairan-simpanan-saya', [PencairanSimpananController::class, 'store'])
-            ->name('pencairan-simpanan.saya.store');
+    
+/*
+|--------------------------------------------------------------------------
+| PENCAIRAN SIMPANAN
+|--------------------------------------------------------------------------
+*/
+
+// ANGGOTA
+Route::middleware('role:anggota')
+    ->prefix('pencairan-simpanan-saya')
+    ->name('pencairan-simpanan.saya.')
+    ->group(function () {
+        Route::get('/', [PencairanSimpananController::class, 'anggotaIndex'])
+            ->name('index');
+
+        Route::get('/ajukan', [PencairanSimpananController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [PencairanSimpananController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'anggotaShow'])
+            ->name('show');
     });
 
-    Route::middleware('role:cs')->prefix('pencairan-simpanan/cs')->name('pencairan-simpanan.cs.')->group(function () {
-        Route::get('/', [PencairanSimpananController::class, 'csIndex'])->name('index');
-        Route::post('/{pencairanSimpanan}/periksa', [PencairanSimpananController::class, 'periksaCs'])->name('periksa');
+// CS / TELLER
+Route::middleware('role:cs')
+    ->prefix('pencairan-simpanan/cs')
+    ->name('pencairan-simpanan.cs.')
+    ->group(function () {
+        Route::get('/', [PencairanSimpananController::class, 'csIndex'])
+            ->name('index');
+
+        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'csShow'])
+            ->name('show');
+
+        Route::post('/{pencairanSimpanan}/periksa', [PencairanSimpananController::class, 'periksaCs'])
+            ->name('periksa');
     });
 
-    Route::middleware('role:kabag')->prefix('pencairan-simpanan/kabag')->name('pencairan-simpanan.kabag.')->group(function () {
-        Route::get('/', [PencairanSimpananController::class, 'kabagIndex'])->name('index');
-        Route::post('/{pencairanSimpanan}/keputusan', [PencairanSimpananController::class, 'keputusanKabag'])->name('keputusan');
+// KABAG
+Route::middleware('role:kabag')
+    ->prefix('pencairan-simpanan/kabag')
+    ->name('pencairan-simpanan.kabag.')
+    ->group(function () {
+        Route::get('/', [PencairanSimpananController::class, 'kabagIndex'])
+            ->name('index');
+
+        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'kabagShow'])
+            ->name('show');
+
+        Route::post('/{pencairanSimpanan}/keputusan', [PencairanSimpananController::class, 'keputusanKabag'])
+            ->name('keputusan');
     });
 
-    Route::middleware('role:bendahara')->prefix('pencairan-simpanan/bendahara')->name('pencairan-simpanan.bendahara.')->group(function () {
-        Route::get('/', [PencairanSimpananController::class, 'bendaharaIndex'])->name('index');
-        Route::post('/{pencairanSimpanan}/cairkan', [PencairanSimpananController::class, 'cairkan'])->name('cairkan');
+// BENDAHARA
+Route::middleware('role:bendahara')
+    ->prefix('pencairan-simpanan/bendahara')
+    ->name('pencairan-simpanan.bendahara.')
+    ->group(function () {
+        Route::get('/', [PencairanSimpananController::class, 'bendaharaIndex'])
+            ->name('index');
+
+        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'bendaharaShow'])
+            ->name('show');
+
+        Route::post('/{pencairanSimpanan}/cairkan', [PencairanSimpananController::class, 'cairkan'])
+            ->name('cairkan');
     });
+
 
     });
 

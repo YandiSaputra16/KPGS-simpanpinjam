@@ -213,11 +213,11 @@
                                 </span>
                             </td>
 
-                            <td class="text-center">
-                                <a href="{{ route('pencairan-simpanan.cs.index') }}"
-                                   class="btn btn-sm btn-outline-primary text-nowrap">
+                           <td class="text-center">
+                                <a href="{{ route('pencairan-simpanan.cs.show', $item->id) }}"
+                                class="btn btn-sm btn-outline-primary text-nowrap">
                                     <i class="bi bi-eye me-1"></i>
-                                    Periksa
+                                    Detail
                                 </a>
                             </td>
                         </tr>

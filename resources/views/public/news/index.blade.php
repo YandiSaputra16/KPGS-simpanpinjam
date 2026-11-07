@@ -1,13 +1,14 @@
+
 <x-public-layout :pengaturan="$pengaturan">
     <x-slot name="title">
         Berita KPGS
     </x-slot>
 
     <section class="bg-light">
-        <div class="container py-5">
+        <div class="container-fluid px-4 px-xl-5 py-5">
 
             {{-- Header --}}
-            <div class="mb-5 col-12 col-lg-8">
+            <div class="mb-4">
                 <span class="small fw-semibold text-primary text-uppercase">
                     Informasi KPGS
                 </span>
@@ -22,24 +23,29 @@
             </div>
 
             {{-- Daftar Berita --}}
-            @if ($berita->count())
+            @if ($berita->isNotEmpty())
 
-                <div class="row g-4">
+                <div class="row g-4 align-items-start">
 
                     @foreach ($berita as $item)
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <article class="card border-0 shadow-sm h-100 overflow-hidden">
 
-                                {{-- Gambar --}}
+                        {{-- Satu Kesatuan Kartu Berita --}}
+                        <div class="col-12 col-md-6 col-xl-4 news-item">
+
+                            <article class="card border-0 shadow-sm overflow-hidden h-100">
+
+                                {{-- Gambar Berita --}}
                                 @if ($item->gambar)
                                     <img
                                         src="{{ asset('storage/' . $item->gambar) }}"
                                         alt="{{ $item->judul }}"
-                                        class="card-img-top object-fit-cover kpgs-image-height-224"
+                                        class="card-img-top w-100"
+                                        style="height: auto; display: block;"
                                     >
                                 @else
                                     <div
-                                        class="d-flex align-items-center justify-content-center bg-secondary-subtle text-secondary kpgs-image-height-224"
+                                        class="d-flex align-items-center justify-content-center bg-secondary-subtle text-secondary"
+                                        style="height: 200px;"
                                     >
                                         <span class="small">
                                             Tidak ada gambar
@@ -47,11 +53,12 @@
                                     </div>
                                 @endif
 
-                                {{-- Isi Card --}}
-                                <div class="card-body d-flex flex-column p-4">
+                                {{-- Konten Berita --}}
+                                <div class="card-body p-4">
 
                                     {{-- Tanggal --}}
                                     <div class="small text-secondary">
+                                        <i class="bi bi-calendar3 me-1"></i>
                                         {{ $item->published_at?->translatedFormat('d F Y') }}
                                     </div>
 
@@ -67,45 +74,57 @@
                                         </p>
                                     @else
                                         <p class="text-secondary lh-lg mt-3 mb-0">
-                                            {{ \Illuminate\Support\Str::limit(strip_tags($item->isi), 150) }}
+                                            {{ \Illuminate\Support\Str::limit(strip_tags($item->isi), 180) }}
                                         </p>
                                     @endif
 
-                                    {{-- Tombol dan Isi Lengkap --}}
-                                    <div class="mt-auto pt-4">
+                                    {{-- Tombol Baca Selengkapnya --}}
+                                    <button
+                                        type="button"
+                                        class="btn btn-primary btn-sm mt-3"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#berita-{{ $item->id }}"
+                                        aria-expanded="false"
+                                        aria-controls="berita-{{ $item->id }}"
+                                    >
+                                        <i class="bi bi-book me-1"></i>
+                                        Baca Selengkapnya
+                                    </button>
 
-                                        <button
-                                            type="button"
-                                            class="btn btn-primary"
-                                            data-bs-toggle="collapse"
-                                            data-bs-target="#berita-{{ $item->id }}"
-                                            aria-expanded="false"
-                                            aria-controls="berita-{{ $item->id }}"
-                                        >
-                                            <i class="bi bi-book me-1"></i>
-                                            Baca Selengkapnya
-                                        </button>
+                                    {{-- Isi Lengkap Dalam Card yang Sama --}}
+                                    <div
+                                        id="berita-{{ $item->id }}"
+                                        class="collapse"
+                                    >
+                                        <div class="border-top mt-4 pt-4">
 
-                                        {{-- Isi Lengkap --}}
-                                        <div
-                                            id="berita-{{ $item->id }}"
-                                            class="collapse"
-                                        >
-                                            <div class="border-top mt-4 pt-4">
-                                                <div
-                                                    class="text-secondary lh-lg kpgs-pre-line"
-                                                >
-                                                    {{ $item->isi }}
-                                                </div>
+                                            <div class="small text-primary fw-semibold text-uppercase mb-3">
+                                                Isi Lengkap Berita
                                             </div>
-                                        </div>
 
+                                            <div class="text-secondary lh-lg kpgs-pre-line">
+                                                {{ $item->isi }}
+                                            </div>
+
+                                            {{-- Tombol Tutup --}}
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-secondary btn-sm mt-4"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#berita-{{ $item->id }}"
+                                            >
+                                                <i class="bi bi-x-lg me-1"></i>
+                                                Tutup Berita
+                                            </button>
+
+                                        </div>
                                     </div>
 
                                 </div>
-
                             </article>
+
                         </div>
+
                     @endforeach
 
                 </div>
@@ -140,4 +159,28 @@
 
         </div>
     </section>
+
+    {{-- Mengatur Lebar Card Ketika Detail Dibuka --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.news-item .collapse').forEach(function (detail) {
+
+                const cardColumn = detail.closest('.news-item');
+
+                detail.addEventListener('show.bs.collapse', function () {
+                    cardColumn.classList.remove('col-md-6', 'col-xl-4');
+                    cardColumn.classList.add('col-12');
+                });
+
+                detail.addEventListener('hidden.bs.collapse', function () {
+                    cardColumn.classList.remove('col-12');
+                    cardColumn.classList.add('col-md-6', 'col-xl-4');
+                });
+
+            });
+
+        });
+    </script>
+
 </x-public-layout>
