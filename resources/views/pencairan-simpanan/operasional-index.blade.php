@@ -259,160 +259,16 @@
                                                 </td>
 
                                                 <td class="text-center">
-                                                    <button
-                                                        class="btn btn-sm btn-primary"
-                                                        type="button"
-                                                        data-bs-toggle="collapse"
-                                                        data-bs-target="#keputusan-{{ $item->id }}"
-                                                        aria-expanded="false"
-                                                        aria-controls="keputusan-{{ $item->id }}"
+                                                    <a
+                                                        href="{{ route('pencairan-simpanan.kabag.show', $item->id) }}"
+                                                        class="btn btn-sm btn-outline-primary text-nowrap"
                                                     >
                                                         <i class="bi bi-eye me-1"></i>
-                                                        Tinjau
-                                                    </button>
+                                                        Detail
+                                                    </a>
                                                 </td>
                                             </tr>
 
-                                            {{-- DETAIL PENGAJUAN --}}
-                                            <tr class="border-0">
-                                                <td colspan="7" class="p-0 border-0">
-                                                    <div
-                                                        class="collapse"
-                                                        id="keputusan-{{ $item->id }}"
-                                                    >
-                                                        <div class="bg-light border-top border-bottom p-3 p-md-4">
-                                                            <div class="row g-3 mb-3">
-
-                                                                {{-- INFORMASI PENGAJUAN --}}
-                                                                <div class="col-12 col-lg-6">
-                                                                    <div class="card border-0 h-100">
-                                                                        <div class="card-body">
-                                                                            <h6 class="fw-bold mb-3">
-                                                                                Informasi Pengajuan
-                                                                            </h6>
-
-                                                                            <div class="mb-2">
-                                                                                <div class="small text-muted">
-                                                                                    Alasan pencairan
-                                                                                </div>
-                                                                                <div>
-                                                                                    {{ $item->alasan ?: '-' }}
-                                                                                </div>
-                                                                            </div>
-
-                                                                            <div class="mb-2">
-                                                                                <div class="small text-muted">
-                                                                                    Saldo simpanan saat ini
-                                                                                </div>
-                                                                                <div class="fw-semibold">
-                                                                                    Rp
-                                                                                    {{ number_format((float) ($item->anggota->{'saldo_simpanan_'.$item->jenis_simpanan} ?? 0), 0, ',', '.') }}
-                                                                                </div>
-                                                                            </div>
-
-                                                                            @if ($item->bukti)
-                                                                                <a
-                                                                                    href="{{ asset('storage/'.$item->bukti) }}"
-                                                                                    target="_blank"
-                                                                                    rel="noopener"
-                                                                                    class="btn btn-sm btn-outline-primary mt-2"
-                                                                                >
-                                                                                    <i class="bi bi-file-earmark-image me-1"></i>
-                                                                                    Lihat Bukti Pengajuan
-                                                                                </a>
-                                                                            @endif
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                {{-- HASIL PEMERIKSAAN CS --}}
-                                                                <div class="col-12 col-lg-6">
-                                                                    <div class="card border-0 h-100">
-                                                                        <div class="card-body">
-                                                                            <h6 class="fw-bold mb-3">
-                                                                                Hasil Pemeriksaan CS/Teller
-                                                                            </h6>
-
-                                                                            <div class="small text-muted mb-1">
-                                                                                Catatan pemeriksaan
-                                                                            </div>
-                                                                            <div>
-                                                                                {{ $item->catatan_cs ?: 'Tidak ada catatan dari CS/Teller.' }}
-                                                                            </div>
-
-                                                                            <div class="small text-muted mt-3 mb-1">
-                                                                                Diperiksa pada
-                                                                            </div>
-                                                                            <div>
-                                                                                {{ $item->diperiksa_cs_pada?->format('d/m/Y H:i') ?? '-' }}
-                                                                            </div>
-
-                                                                            <div class="small text-muted mt-3 mb-1">
-                                                                                Nominal yang diajukan
-                                                                            </div>
-                                                                            <div class="fw-semibold">
-                                                                                Rp
-                                                                                {{ number_format((float) $item->jumlah, 0, ',', '.') }}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-
-                                                            {{-- FORM KEPUTUSAN KABAG --}}
-                                                            <form
-                                                                method="POST"
-                                                                action="{{ route('pencairan-simpanan.kabag.keputusan', $item) }}"
-                                                            >
-                                                                @csrf
-
-                                                                <label
-                                                                    for="catatan-{{ $item->id }}"
-                                                                    class="form-label fw-semibold"
-                                                                >
-                                                                    Catatan keputusan Kabag
-                                                                    <span class="text-muted fw-normal">
-                                                                        (opsional)
-                                                                    </span>
-                                                                </label>
-
-                                                                <textarea
-                                                                    id="catatan-{{ $item->id }}"
-                                                                    class="form-control mb-3"
-                                                                    name="catatan"
-                                                                    rows="2"
-                                                                    maxlength="2000"
-                                                                    placeholder="Tuliskan catatan keputusan jika diperlukan..."
-                                                                ></textarea>
-
-                                                                <div class="d-flex flex-wrap gap-2">
-                                                                    <button
-                                                                        class="btn btn-success"
-                                                                        type="submit"
-                                                                        name="keputusan"
-                                                                        value="setujui"
-                                                                        onclick="return confirm('Setujui pengajuan pencairan simpanan ini?')"
-                                                                    >
-                                                                        <i class="bi bi-check-circle me-1"></i>
-                                                                        Setujui Pengajuan
-                                                                    </button>
-
-                                                                    <button
-                                                                        class="btn btn-outline-danger"
-                                                                        type="submit"
-                                                                        name="keputusan"
-                                                                        value="tolak"
-                                                                        onclick="return confirm('Tolak pengajuan pencairan simpanan ini?')"
-                                                                    >
-                                                                        <i class="bi bi-x-circle me-1"></i>
-                                                                        Tolak Pengajuan
-                                                                    </button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -608,7 +464,7 @@
                                 <th>Jumlah</th>
                                 <th>Alasan / Catatan</th>
                                 <th>Diajukan</th>
-                                <th style="min-width:280px">Tindakan</th>
+                                <th style="min-width:{{ $tahap === 'cs' ? '280px' : '120px' }}">Tindakan</th>
                             </tr>
                         </thead>
 
@@ -710,45 +566,13 @@
                                                 </div>
                                             </form>
                                         @else
-                                            <form
-                                                method="POST"
-                                                action="{{ route('pencairan-simpanan.bendahara.cairkan', $item) }}"
-                                                enctype="multipart/form-data"
+                                            <a
+                                                href="{{ route('pencairan-simpanan.bendahara.show', $item->id) }}"
+                                                class="btn btn-sm btn-primary text-nowrap"
                                             >
-                                                @csrf
-
-                                                <label class="form-label small">
-                                                    Tanggal pembayaran
-                                                </label>
-
-                                                <input
-                                                    class="form-control form-control-sm mb-2"
-                                                    type="date"
-                                                    name="tanggal_pencairan"
-                                                    value="{{ now()->toDateString() }}"
-                                                    max="{{ now()->toDateString() }}"
-                                                    required
-                                                >
-
-                                                <label class="form-label small">
-                                                    Bukti pembayaran (opsional)
-                                                </label>
-
-                                                <input
-                                                    class="form-control form-control-sm mb-2"
-                                                    type="file"
-                                                    name="bukti_pencairan"
-                                                    accept="image/jpeg,image/png,image/webp"
-                                                >
-
-                                                <button
-                                                    class="btn btn-sm btn-primary"
-                                                    type="submit"
-                                                    onclick="return confirm('Pastikan uang benar-benar sudah dibayarkan kepada anggota. Lanjutkan pencatatan pencairan?')"
-                                                >
-                                                    Bayar &amp; Catat Kas Keluar
-                                                </button>
-                                            </form>
+                                                <i class="bi bi-eye me-1"></i>
+                                                Detail
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>

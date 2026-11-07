@@ -79,6 +79,7 @@
                         <th class="small fw-semibold text-muted text-end">Jumlah</th>
                         <th class="small fw-semibold text-muted">Tanggal Pengajuan</th>
                         <th class="small fw-semibold text-muted text-center">Status</th>
+                        <th class="small fw-semibold text-muted text-center">Tindakan</th>
                     </tr>
                 </thead>
 
@@ -113,10 +114,18 @@
                                     Menunggu Kabag
                                 </span>
                             </td>
+
+                            <td class="text-center">
+                                <a href="{{ route('pencairan-simpanan.kabag.show', $pencairan->id) }}"
+                                   class="btn btn-primary btn-sm text-nowrap">
+                                    <i class="bi bi-eye me-1"></i>
+                                    Detail
+                                </a>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-4">
+                            <td colspan="7" class="text-center py-4">
                                 <i class="bi bi-piggy-bank fs-3 text-muted d-block mb-2"></i>
                                 <div class="small fw-semibold text-dark mb-1">
                                     Tidak Ada Pengajuan Pencairan Simpanan
