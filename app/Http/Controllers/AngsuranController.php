@@ -49,6 +49,49 @@ class AngsuranController extends Controller
         );
     }
 
+    /**
+     * Menampilkan detail angsuran berdasarkan pinjaman.
+     */
+    public function detailMilikSaya(Pinjaman $pinjaman)
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'anggota') {
+            abort(403);
+        }
+
+        $anggota = $user->anggota;
+
+        if (!$anggota) {
+            abort(403, 'Data anggota belum tersedia.');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pastikan pinjaman benar-benar milik anggota yang sedang login
+        |--------------------------------------------------------------------------
+        */
+
+        if ((int) $pinjaman->anggota_id !== (int) $anggota->id) {
+            abort(403);
+        }
+
+        $pinjaman->load([
+            'masterPinjaman',
+            'angsuran' => function ($query) {
+                $query->orderBy('angsuran_ke');
+            },
+        ]);
+
+        return view(
+            'anggota.angsuran-detail',
+            compact('pinjaman')
+        );
+    }
+
+    /**
+     * Menampilkan detail transaksi angsuran milik anggota.
+     */
     public function detailTransaksiSaya(Angsuran $angsuran)
     {
         $user = Auth::user();
@@ -90,7 +133,7 @@ class AngsuranController extends Controller
         |
         */
 
-       $bukti = null;
+        $bukti = null;
 
         $buktiPembayaran = $angsuran->bukti_pembayaran;
 
@@ -101,10 +144,9 @@ class AngsuranController extends Controller
         } elseif (is_string($buktiPembayaran) && $buktiPembayaran !== '') {
             $bukti = $buktiPembayaran;
         }
+
         $pembayaran = (object) [
             'id' => $angsuran->id,
-
-            'pinjaman_id' => $angsuran->pinjaman_id,
 
             'nomor' => 'Angsuran ke-' . $angsuran->angsuran_ke,
 
@@ -143,6 +185,10 @@ class AngsuranController extends Controller
             'no_pinjaman' =>
                 $angsuran->pinjaman->no_pinjaman ?? null,
 
+            // ID database pinjaman untuk route pembayaran.
+            'pinjaman_id' =>
+                $angsuran->pinjaman->getKey(),
+
             'angsuran_ke' =>
                 $angsuran->angsuran_ke,
 
@@ -174,8 +220,32 @@ class AngsuranController extends Controller
         );
     }
 
-   
-    public function bayar(Request $request, Pinjaman $pinjaman)
+    /*
+    |--------------------------------------------------------------------------
+    | RESOLUSI PINJAMAN
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     */
+    private function cariPinjaman(string $identifier): Pinjaman
+    {
+        return Pinjaman::query()
+            ->whereKey($identifier)
+            ->orWhere('no_pinjaman', $identifier)
+            ->firstOrFail();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PEMBAYARAN ANGSURAN ANGGOTA
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Mengajukan pembayaran angsuran.
+     */
+    public function bayar(Request $request, string $pinjaman)
     {
         $user = Auth::user();
 
@@ -188,6 +258,14 @@ class AngsuranController extends Controller
         if (!$anggota) {
             abort(403, 'Data anggota belum tersedia.');
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cari pinjaman berdasarkan ID atau nomor pinjaman
+        |--------------------------------------------------------------------------
+        */
+
+        $pinjaman = $this->cariPinjaman($pinjaman);
 
         /*
         |--------------------------------------------------------------------------
@@ -260,16 +338,19 @@ class AngsuranController extends Controller
         }
 
         return redirect()
-            ->route('angsuran.saya.index')
+            ->route('angsuran.saya.show', $pinjaman)
             ->with(
                 'success',
                 'Pembayaran angsuran berhasil dikirim dan sedang menunggu verifikasi CS/Teller.'
             );
     }
 
+    /**
+     * Mengirim ulang bukti pembayaran angsuran yang ditolak.
+     */
     public function uploadUlang(
         Request $request,
-        Pinjaman $pinjaman
+        string $pinjaman
     ) {
         $user = Auth::user();
 
@@ -283,9 +364,29 @@ class AngsuranController extends Controller
             abort(403, 'Data anggota belum tersedia.');
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Cari pinjaman berdasarkan ID atau nomor pinjaman
+        |--------------------------------------------------------------------------
+        */
+
+        $pinjaman = $this->cariPinjaman($pinjaman);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pastikan pinjaman milik anggota
+        |--------------------------------------------------------------------------
+        */
+
         if ((int) $pinjaman->anggota_id !== (int) $anggota->id) {
             abort(403);
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validasi
+        |--------------------------------------------------------------------------
+        */
 
         $validated = $request->validate([
             'angsuran_ids' => [
@@ -307,6 +408,12 @@ class AngsuranController extends Controller
                 'max:5120',
             ],
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Upload bukti pembayaran baru
+        |--------------------------------------------------------------------------
+        */
 
         $buktiPath = $request
             ->file('bukti_pembayaran')
@@ -336,7 +443,7 @@ class AngsuranController extends Controller
         }
 
         return redirect()
-            ->route('angsuran.saya.index')
+            ->route('angsuran.saya.show', $pinjaman)
             ->with(
                 'success',
                 'Bukti pembayaran berhasil dikirim ulang dan sedang menunggu verifikasi CS/Teller.'
@@ -349,30 +456,57 @@ class AngsuranController extends Controller
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * Menampilkan daftar pembayaran angsuran yang menunggu verifikasi.
+     */
     public function index()
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        if ($user->role !== 'cs') {
-            abort(403);
-        }
-
-        $angsuran = Angsuran::query()
-            ->with([
-                'pinjaman.anggota.user',
-                'pinjaman',
-            ])
-            ->menungguVerifikasi()
-            ->orderByDesc('tanggal_bayar')
-            ->orderBy('angsuran_ke')
-            ->get();
-
-        return view(
-            'angsuran.index',
-            compact('angsuran')
-        );
+    if ($user->role !== 'cs') {
+        abort(403);
     }
 
+    // Antrean pembayaran yang masih menunggu verifikasi.
+    $angsuranMenunggu = Angsuran::query()
+        ->with([
+            'pinjaman.anggota.user',
+            'pinjaman.masterPinjaman',
+        ])
+        ->menungguVerifikasi()
+        ->orderByDesc('tanggal_bayar')
+        ->orderBy('angsuran_ke')
+        ->get();
+
+    // Riwayat pembayaran yang sudah disetujui dan dinyatakan lunas.
+    $riwayatPersetujuan = Angsuran::query()
+        ->with([
+            'pinjaman.anggota.user',
+            'pinjaman.masterPinjaman',
+            'verifikator',
+        ])
+        ->where('status_pembayaran', 'lunas')
+        ->whereNotNull('verified_by')
+        ->orderByDesc('tanggal_verifikasi')
+        ->orderByDesc('tanggal_bayar')
+        ->get();
+
+    $jumlahMenunggu = $angsuranMenunggu->count();
+    $jumlahDisetujui = $riwayatPersetujuan->count();
+    $jumlahTransaksi = $jumlahMenunggu + $jumlahDisetujui;
+
+    return view('angsuran.index', compact(
+        'angsuranMenunggu',
+        'riwayatPersetujuan',
+        'jumlahMenunggu',
+        'jumlahDisetujui',
+        'jumlahTransaksi'
+    ));
+}
+
+    /**
+     * Menampilkan detail pembayaran untuk CS/Teller.
+     */
     public function show(Angsuran $angsuran)
     {
         $user = Auth::user();
@@ -385,18 +519,6 @@ class AngsuranController extends Controller
             'pinjaman.anggota.user',
             'pinjaman.masterPinjaman',
         ]);
-
-        $buktiPembayaran = $angsuran->bukti_pembayaran;
-
-        if (is_array($buktiPembayaran)) {
-            $bukti = !empty($buktiPembayaran)
-                ? $buktiPembayaran[array_key_last($buktiPembayaran)]
-                : null;
-        } elseif (is_string($buktiPembayaran) && $buktiPembayaran !== '') {
-            $bukti = $buktiPembayaran;
-        } else {
-            $bukti = null;
-        }
 
         return view(
             'angsuran.show',

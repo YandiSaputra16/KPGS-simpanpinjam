@@ -21,8 +21,8 @@
         </div>
     </x-slot>
 
-    <div class="container-fluid py-4">
-        <div class="container kpgs-container-1000">
+    <div class="container-fluid w-100 py-3 py-md-4 px-2 px-sm-3 px-lg-4">
+        <div class="w-100">
 
             {{-- Pesan error umum --}}
             @if ($errors->has('pinjaman'))
@@ -66,7 +66,7 @@
 
             {{-- Informasi anggota --}}
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3 px-4">
+                <div class="card-header bg-white py-3 px-3 px-sm-4">
                     <h5 class="fw-bold mb-1">
                         Data Anggota
                     </h5>
@@ -76,8 +76,8 @@
                     </p>
                 </div>
 
-                <div class="card-body p-4">
-                    <div class="row g-4">
+                <div class="card-body p-3 p-sm-4">
+                    <div class="row g-3 g-md-4">
 
                         <div class="col-12 col-md-6">
                             <div class="text-muted small mb-1">
@@ -142,7 +142,7 @@
 
                 {{-- Paket dan nominal --}}
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 px-4">
+                    <div class="card-header bg-white py-3 px-3 px-sm-4">
                         <h5 class="fw-bold mb-1">
                             Data Pinjaman
                         </h5>
@@ -152,7 +152,7 @@
                         </p>
                     </div>
 
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-sm-4">
 
                         {{-- Paket --}}
                         <div class="mb-4">
@@ -444,7 +444,7 @@
 
                 {{-- Data pendukung --}}
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 px-4">
+                    <div class="card-header bg-white py-3 px-3 px-sm-4">
                         <h5 class="fw-bold mb-1">
                             Data Pendukung Analisis
                         </h5>
@@ -454,9 +454,9 @@
                         </p>
                     </div>
 
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-sm-4">
 
-                        <div class="row g-4">
+                        <div class="row g-3 g-md-4">
 
                             {{-- Produksi susu --}}
                             <div class="col-12 col-md-6">
@@ -682,13 +682,13 @@
 
                 {{-- Ketentuan --}}
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 px-4">
+                    <div class="card-header bg-white py-3 px-3 px-sm-4">
                         <h5 class="fw-bold mb-0">
                             Persetujuan Pengajuan
                         </h5>
                     </div>
 
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-sm-4">
 
                         @php
                             $syaratUmum = $paketPinjaman

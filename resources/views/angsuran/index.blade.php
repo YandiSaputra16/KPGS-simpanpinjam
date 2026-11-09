@@ -1,3 +1,4 @@
+
 <x-app-layout>
     <x-slot name="header">
         <div>
@@ -41,19 +42,6 @@
                     </ul>
                 </div>
             @endif
-
-            @php
-                /*
-                 * Data $angsuran berasal dari controller yang sudah ada.
-                 * Halaman ini hanya menampilkan antrean verifikasi.
-                 */
-                $daftarAngsuran = $angsuran;
-
-                $jumlahMenunggu = $daftarAngsuran->count();
-
-                $jumlahTransaksi = $jumlahMenunggu;
-                $jumlahDisetujui = 0;
-            @endphp
 
             {{-- Statistik --}}
             <div class="row g-3 mb-4">
@@ -102,7 +90,6 @@
                                 <div>
                                     <div class="text-muted small">Disetujui</div>
                                     <div class="fs-3 fw-bold">{{ $jumlahDisetujui }}</div>
-                                    <div class="small text-muted">Tidak termasuk riwayat transaksi</div>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +160,7 @@
                 </div>
             </div>
 
-            {{-- Daftar Angsuran --}}
+            {{-- Daftar Angsuran Menunggu Verifikasi --}}
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3 px-4">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
@@ -205,7 +192,7 @@
                         </thead>
 
                         <tbody>
-                            @forelse ($daftarAngsuran as $item)
+                            @forelse ($angsuranMenunggu as $item)
                                 @php
                                     $pinjamanItem = $item->pinjaman;
                                     $anggotaItem = $pinjamanItem?->anggota;
@@ -316,10 +303,119 @@
                 </div>
             </div>
 
+            {{-- Riwayat Persetujuan Angsuran --}}
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-white py-3 px-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                        <div>
+                            <h5 class="fw-bold mb-1">Riwayat Persetujuan Angsuran</h5>
+                            <p class="text-muted small mb-0">
+                                Menampilkan pembayaran angsuran yang telah disetujui oleh CS/Teller.
+                            </p>
+                        </div>
+
+                        <span class="badge bg-success bg-opacity-10 text-success">
+                            {{ $jumlahDisetujui }} Transaksi Disetujui
+                        </span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background-color:#edf8fb;">
+                            <tr>
+                                <th class="px-3 py-3 text-nowrap">No. Pinjaman</th>
+                                <th class="px-3 py-3">Anggota</th>
+                                <th class="px-3 py-3 text-nowrap">Angsuran</th>
+                                <th class="px-3 py-3 text-nowrap">Tanggal Bayar</th>
+                                <th class="px-3 py-3 text-end text-nowrap">Jumlah</th>
+                                <th class="px-3 py-3 text-nowrap">Tanggal Verifikasi</th>
+                                <th class="px-3 py-3">Verifikator</th>
+                                <th class="px-3 py-3 text-nowrap">Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @forelse ($riwayatPersetujuan as $item)
+                                @php
+                                    $pinjamanItem = $item->pinjaman;
+                                    $anggotaItem = $pinjamanItem?->anggota;
+
+                                    $nominalPembayaran = (float) (
+                                        ($item->jumlah_bayar ?? 0) > 0
+                                            ? $item->jumlah_bayar
+                                            : ($item->total_tagihan ?? $item->total_angsuran ?? 0)
+                                    );
+                                @endphp
+
+                                <tr>
+                                    <td class="px-3 py-3 fw-semibold text-nowrap">
+                                        {{ $pinjamanItem?->no_pinjaman ?? '-' }}
+                                    </td>
+
+                                    <td class="px-3 py-3">
+                                        <div class="fw-semibold">
+                                            {{ $anggotaItem?->user?->nama ?? '-' }}
+                                        </div>
+                                        <div class="small text-muted">
+                                            {{ $anggotaItem?->kode_anggota ?? '-' }}
+                                        </div>
+                                    </td>
+
+                                    <td class="px-3 py-3 text-nowrap">
+                                        Ke-{{ $item->angsuran_ke }}
+                                    </td>
+
+                                    <td class="px-3 py-3 text-nowrap">
+                                        {{ $item->tanggal_bayar
+                                            ? \Illuminate\Support\Carbon::parse($item->tanggal_bayar)->translatedFormat('d F Y')
+                                            : '-' }}
+                                    </td>
+
+                                    <td class="px-3 py-3 text-end fw-semibold text-nowrap">
+                                        Rp {{ number_format($nominalPembayaran, 0, ',', '.') }}
+                                    </td>
+
+                                    <td class="px-3 py-3 text-nowrap">
+                                        {{ $item->tanggal_verifikasi
+                                            ? $item->tanggal_verifikasi->translatedFormat('d F Y H:i')
+                                            : '-' }}
+                                    </td>
+
+                                    <td class="px-3 py-3">
+                                        {{ $item->verifikator?->nama ?? '-' }}
+                                    </td>
+
+                                    <td class="px-3 py-3">
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle me-1"></i>
+                                            Disetujui
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center py-5">
+                                        <i class="bi bi-clock-history text-muted d-block mb-3"
+                                           style="font-size:2.5rem;"></i>
+                                        <div class="fw-semibold">
+                                            Belum Ada Riwayat Persetujuan
+                                        </div>
+                                        <div class="text-muted small">
+                                            Pembayaran angsuran yang telah disetujui akan ditampilkan di sini.
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    {{-- Filter sisi tampilan saja; tidak mengubah backend --}}
+    {{-- Filter sisi tampilan untuk antrean verifikasi --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const pencarian = document.getElementById('filterPencarian');
@@ -359,7 +455,13 @@
                 });
 
                 jumlahData.textContent = terlihat;
-                hasilKosong.classList.toggle('d-none', terlihat !== 0 || baris.length === 0);
+
+                if (hasilKosong) {
+                    hasilKosong.classList.toggle(
+                        'd-none',
+                        terlihat !== 0 || baris.length === 0
+                    );
+                }
             }
 
             tombolFilter.addEventListener('click', terapkanFilter);
