@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -16,8 +17,11 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'anggota' => $user->role === 'anggota' ? $user->anggota : null,
         ]);
     }
 
@@ -26,13 +30,31 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+        DB::transaction(function () use ($user, $validated) {
+            $user->nama = $validated['nama'];
+            $user->email = $validated['email'];
 
-        $request->user()->save();
+            if ($user->isDirty('email')) {
+                $user->email_verified_at = null;
+            }
+
+            $user->save();
+
+            if ($user->role === 'anggota' && $user->anggota) {
+                $user->anggota->update([
+                    'nik' => $validated['nik'],
+                    'no_hp' => $validated['no_hp'],
+                    'alamat' => $validated['alamat'],
+                    'pekerjaan' => $validated['pekerjaan'] ?? null,
+                    'nama_bank' => $validated['nama_bank'] ?? null,
+                    'nomor_rekening' => $validated['nomor_rekening'] ?? null,
+                    'atas_nama_rekening' => $validated['atas_nama_rekening'] ?? null,
+                ]);
+            }
+        });
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

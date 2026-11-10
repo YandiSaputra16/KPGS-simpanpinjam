@@ -1,20 +1,58 @@
+
 <x-app-layout>
-    <div class="container py-4">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-            <div><h1 class="h3 mb-1">Ajukan Pencairan Simpanan</h1><p class="text-muted mb-0">Pilih jenis simpanan yang ingin dicairkan. Pencairan diproses setelah pemeriksaan CS/Teller, persetujuan Kabag, dan pembayaran Bendahara.</p></div>
-            <a href="{{ route('pencairan-simpanan.saya.index') }}" class="btn btn-outline-secondary">Kembali</a>
+    <div class="container-fluid w-100 py-3 py-md-4 px-2 px-sm-3 px-lg-4">
+        <div class="w-100">
+            <div class="d-flex flex-column flex-md-row flex-wrap justify-content-between align-items-md-center gap-3 mb-4">
+            <div class="flex-grow-1">
+                <h1 class="h3 mb-1">Ajukan Pencairan Simpanan</h1>
+                <p class="text-muted mb-0">Pilih jenis simpanan yang ingin dicairkan. Pencairan diproses setelah pemeriksaan CS/Teller, persetujuan Kabag, dan pembayaran Bendahara.</p>
+            </div>
+            <a href="{{ route('pencairan-simpanan.saya.index') }}" class="btn btn-outline-secondary align-self-start align-self-md-auto">Kembali</a>
         </div>
-        @if ($errors->any())<div class="alert alert-danger"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
-        <div class="card border-0 shadow-sm"><div class="card-body p-4">
-            <form method="POST" action="{{ route('pencairan-simpanan.saya.store') }}" enctype="multipart/form-data">@csrf
-                <div class="mb-3"><label class="form-label" for="jenis_simpanan">Jenis simpanan</label><select class="form-select" id="jenis_simpanan" name="jenis_simpanan" required><option value="">-- Pilih jenis simpanan --</option>@foreach($jenisSimpanan as $kode => $label)<option value="{{ $kode }}" @selected(old('jenis_simpanan')===$kode)>{{ $label }}</option>@endforeach</select></div>
-                <div class="alert alert-info mb-3" id="saldoInfo">Pilih jenis simpanan untuk melihat saldo tersedia.</div>
-                <div class="mb-3"><label class="form-label" for="jumlah">Jumlah pencairan (Rp)</label><input class="form-control" type="number" id="jumlah" name="jumlah" min="1" step="0.01" value="{{ old('jumlah') }}" required><div class="form-text">Nominal tidak boleh melebihi saldo tersedia setelah memperhitungkan pengajuan aktif untuk jenis simpanan yang sama.</div></div>
-                <div class="mb-3"><label class="form-label" for="alasan">Alasan pencairan</label><textarea class="form-control" id="alasan" name="alasan" rows="4" maxlength="2000" required>{{ old('alasan') }}</textarea></div>
-                <div class="mb-3"><label class="form-label" for="bukti">Dokumen pendukung (opsional)</label><input class="form-control" type="file" id="bukti" name="bukti" accept="image/jpeg,image/png,image/webp"><div class="form-text">JPG, PNG, atau WEBP maksimal 2 MB.</div></div>
-                <button class="btn btn-primary" type="submit">Kirim Pengajuan</button>
-            </form>
-        </div></div>
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+        <div class="card border-0 shadow-sm w-100">
+            <div class="card-body p-3 p-sm-4 p-lg-4">
+                <form method="POST" action="{{ route('pencairan-simpanan.saya.store') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label class="form-label" for="jenis_simpanan">Jenis simpanan</label>
+                        <select class="form-select" id="jenis_simpanan" name="jenis_simpanan" required>
+                            <option value="">-- Pilih jenis simpanan --</option>
+                            @foreach ($jenisSimpanan as $kode => $label)
+                                <option value="{{ $kode }}" @selected(old('jenis_simpanan') === $kode)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="alert alert-info mb-3" id="saldoInfo">Pilih jenis simpanan untuk melihat saldo tersedia.</div>
+                    <div class="mb-3">
+                        <label class="form-label" for="jumlah">Jumlah pencairan (Rp)</label>
+                        <input class="form-control" type="number" id="jumlah" name="jumlah" min="1" step="0.01" value="{{ old('jumlah') }}" required>
+                        <div class="form-text">Nominal tidak boleh melebihi saldo tersedia setelah memperhitungkan pengajuan aktif untuk jenis simpanan yang sama.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="alasan">Alasan pencairan</label>
+                        <textarea class="form-control" id="alasan" name="alasan" rows="4" maxlength="2000" required>{{ old('alasan') }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="bukti">Dokumen pendukung (opsional)</label>
+                        <input class="form-control" type="file" id="bukti" name="bukti" accept="image/jpeg,image/png,image/webp">
+                        <div class="form-text">JPG, PNG, atau WEBP maksimal 2 MB.</div>
+                    </div>
+                    <div class="d-grid d-sm-flex justify-content-sm-end pt-2">
+                        <button class="btn btn-primary px-4" type="submit">Kirim Pengajuan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {

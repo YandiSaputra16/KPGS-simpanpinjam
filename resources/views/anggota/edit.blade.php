@@ -254,6 +254,28 @@
                             @enderror
                         </div>
 
+                        {{-- INFORMASI REKENING --}}
+                        <div class="col-12 mt-4">
+                            <hr>
+                            <h5 class="fw-bold mb-1">Informasi Rekening Anggota</h5>
+                            <p class="text-muted small mb-0">Rekening tujuan pencairan pinjaman dan simpanan anggota.</p>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="nama_bank" class="form-label fw-semibold">Nama Bank</label>
+                            <input type="text" id="nama_bank" name="nama_bank" value="{{ old('nama_bank', $anggota->nama_bank) }}" class="form-control @error('nama_bank') is-invalid @enderror" maxlength="100">
+                            @error('nama_bank')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label for="nomor_rekening" class="form-label fw-semibold">Nomor Rekening</label>
+                            <input type="text" id="nomor_rekening" name="nomor_rekening" value="{{ old('nomor_rekening', $anggota->nomor_rekening) }}" class="form-control @error('nomor_rekening') is-invalid @enderror" maxlength="50" inputmode="numeric">
+                            @error('nomor_rekening')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label for="atas_nama_rekening" class="form-label fw-semibold">Atas Nama Rekening</label>
+                            <input type="text" id="atas_nama_rekening" name="atas_nama_rekening" value="{{ old('atas_nama_rekening', $anggota->atas_nama_rekening) }}" class="form-control @error('atas_nama_rekening') is-invalid @enderror" maxlength="150">
+                            @error('atas_nama_rekening')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
                         {{-- AKUN --}}
                         <div class="col-12 mt-4">
                             <hr>

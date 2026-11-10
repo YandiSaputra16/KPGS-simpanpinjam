@@ -1,13 +1,40 @@
-<x-app-layout>
-<div class="container-fluid py-4 kpgs-report-page">
 
-    <div class="mb-4">
-        <h4 class="fw-bold mb-1">Laporan Angsuran</h4>
-        <p class="text-muted mb-0">
-            Rekap pembayaran angsuran pinjaman anggota KPGS.
-        </p>
-    </div>
-        <div class="kpgs-report-actions d-flex flex-wrap gap-2 mb-4" data-no-print><button type="button" class="btn btn-primary" data-report-print><i class="bi bi-printer me-1"></i> Cetak Laporan</button> <a href="{{ url()->current() }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter</a></div>
+<x-app-layout>
+    <div class="container-fluid py-4 kpgs-report-page">
+
+        {{-- Header --}}
+        <div class="mb-4 p-4 bg-white border-start border-primary rounded shadow-sm">
+            <h4 class="fw-bold mb-1">Laporan Angsuran</h4>
+            <p class="text-muted mb-0">
+                Rekap pembayaran angsuran, tagihan, dan status pelunasan pinjaman anggota KPGS.
+            </p>
+        </div>
+
+        {{-- Tombol Aksi --}}
+        <div class="kpgs-report-actions d-flex flex-wrap gap-2 mb-4" data-no-print>
+
+            <button type="button" class="btn btn-primary" data-report-print>
+                <i class="bi bi-printer me-1"></i>
+                Cetak Laporan
+            </button>
+
+            <a
+                href="{{ route('laporan.angsuran.export', request()->query()) }}"
+                class="btn btn-success"
+            >
+                <i class="bi bi-file-earmark-excel me-1"></i>
+                Export Excel
+            </a>
+
+            <a
+                href="{{ route('laporan.angsuran') }}"
+                class="btn btn-outline-secondary"
+            >
+                <i class="bi bi-arrow-counterclockwise me-1"></i>
+                Reset Filter
+            </a>
+
+        </div>
 
     {{-- Ringkasan --}}
     <div class="row g-3 mb-4">

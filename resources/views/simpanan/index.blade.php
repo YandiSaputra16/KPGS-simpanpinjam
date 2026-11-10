@@ -12,8 +12,8 @@
         </div>
     </x-slot>
 
-    <div class="container-fluid py-4">
-        <div class="container-xxl">
+    <div class="container-fluid w-100 py-3 py-md-4 px-2 px-sm-3 px-lg-4">
+        <div class="w-100">
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
                     <i class="bi bi-check-circle me-2"></i>
@@ -30,10 +30,10 @@
                 </div>
             @endif
 
-            <div class="row g-3 mb-4">
+            <div class="row g-3 g-xl-4 mb-4">
                 <div class="col-12 col-md-4">
                     <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
+                        <div class="card-body p-3 p-sm-4">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0"
                                      style="width: 48px; height: 48px;">
@@ -50,7 +50,7 @@
 
                 <div class="col-12 col-md-4">
                     <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
+                        <div class="card-body p-3 p-sm-4">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="rounded-circle bg-warning-subtle text-warning d-flex align-items-center justify-content-center flex-shrink-0"
                                      style="width: 48px; height: 48px;">
@@ -69,7 +69,7 @@
 
                 <div class="col-12 col-md-4">
                     <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
+                        <div class="card-body p-3 p-sm-4">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center flex-shrink-0"
                                      style="width: 48px; height: 48px;">
@@ -88,7 +88,7 @@
             </div>
 
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3 px-4">
+                <div class="card-header bg-white py-3 px-3 px-sm-4">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
                         <div>
                             <h5 class="fw-bold mb-1">Filter Data</h5>
@@ -98,7 +98,7 @@
                     </div>
                 </div>
 
-                <div class="card-body p-4">
+                <div class="card-body p-3 p-sm-4">
                     <form method="GET" action="{{ route('simpanan.index') }}">
                         <div class="row g-3">
                             <div class="col-12 col-lg-4">
@@ -187,7 +187,7 @@
             </div>
 
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 px-4">
+                <div class="card-header bg-white py-3 px-3 px-sm-4">
                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
                         <div>
                             <h5 class="fw-bold mb-1">Daftar Simpanan</h5>
@@ -393,15 +393,15 @@
                 </div>
 
                 @if ($simpanan->hasPages())
-                    <div class="card-footer bg-white border-0 px-4 py-3">
+                    <div class="card-footer bg-white border-0 px-3 px-sm-4 py-3">
                         {{ $simpanan->links('pagination::bootstrap-5') }}
                     </div>
                 @endif
-
+            </div>
 
             {{-- DAFTAR PENCAIRAN SIMPANAN: hanya menampilkan data, tanpa tindakan --}}
             <div class="card border-0 shadow-sm mt-4">
-                <div class="card-header bg-white py-3 px-4">
+                <div class="card-header bg-white py-3 px-3 px-sm-4">
                     <h5 class="fw-bold mb-1">Daftar Pencairan Simpanan</h5>
                     <p class="text-muted small mb-0">Menampilkan pengajuan pencairan simpanan anggota dari seluruh tahap proses.</p>
                 </div>
@@ -456,8 +456,6 @@
                         {{ $daftarPencairan->links('pagination::bootstrap-5') }}
                     </div>
                 @endif
-            </div>
-
             </div>
         </div>
     </div>

@@ -6,8 +6,8 @@
         </div>
     </x-slot>
 
-    <div class="container-fluid py-4">
-        <div class="container-xxl">
+    <div class="container-fluid w-100 py-3 py-md-4 px-2 px-sm-3 px-lg-4">
+        <div class="w-100">
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
                     <i class="bi bi-check-circle me-2"></i>
@@ -25,7 +25,7 @@
             @endif
 
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3 px-4">
+                <div class="card-header bg-white py-3 px-3 px-sm-4">
                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
                         <div>
                             <div class="text-muted small">Nomor Simpanan</div>
@@ -57,8 +57,8 @@
                     </div>
                 </div>
 
-                <div class="card-body p-4">
-                    <div class="row g-4">
+                <div class="card-body p-3 p-sm-4">
+                    <div class="row g-3 g-md-4">
                         <div class="col-12 col-lg-6">
                             <div class="border rounded p-4 h-100">
                                 <div class="d-flex align-items-center gap-2 mb-4">
@@ -137,7 +137,7 @@
             </div>
 
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3 px-4">
+                <div class="card-header bg-white py-3 px-3 px-sm-4">
                     <div class="d-flex align-items-center gap-2">
                         <i class="bi bi-receipt text-primary fs-5"></i>
                         <div>
@@ -149,7 +149,7 @@
                     </div>
                 </div>
 
-                <div class="card-body p-4">
+                <div class="card-body p-3 p-sm-4">
                     @if ($simpanan->bukti)
                         <div class="border rounded bg-light p-3">
                             <img
@@ -181,14 +181,14 @@
 
             @if ($simpanan->keterangan)
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 px-4">
+                    <div class="card-header bg-white py-3 px-3 px-sm-4">
                         <div class="d-flex align-items-center gap-2">
                             <i class="bi bi-chat-left-text text-primary fs-5"></i>
                             <h5 class="fw-bold mb-0">Keterangan</h5>
                         </div>
                     </div>
 
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-sm-4">
                         <div class="text-muted">
                             {!! nl2br(e($simpanan->keterangan)) !!}
                         </div>
@@ -198,7 +198,7 @@
 
             @if ($simpanan->status === 'pending')
                 <div class="card border-warning shadow-sm mb-4">
-                    <div class="card-header bg-warning-subtle border-warning py-3 px-4">
+                    <div class="card-header bg-warning-subtle border-warning py-3 px-3 px-sm-4">
                         <div class="d-flex align-items-start gap-2">
                             <i class="bi bi-shield-check text-warning-emphasis fs-5 mt-1"></i>
                             <div>
@@ -213,7 +213,7 @@
                         </div>
                     </div>
 
-                    <div class="card-body p-4">
+                    <div class="card-body p-3 p-sm-4">
                         <form
                             method="POST"
                             action="{{ route('simpanan.verifikasi', $simpanan) }}"
@@ -222,7 +222,7 @@
 
                             <div class="mb-4">
                                 <label for="catatan" class="form-label fw-semibold">
-                                    Catatan Bendahara
+                                    Catatan CS/Teller
                                 </label>
 
                                 <textarea
@@ -270,8 +270,8 @@
             @endif
 
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-body p-4">
-                    <div class="row g-4">
+                <div class="card-body p-3 p-sm-4">
+                    <div class="row g-3 g-md-4">
                         <div class="col-12 col-sm-6">
                             <div class="d-flex align-items-start gap-2">
                                 <i class="bi bi-calendar-plus text-muted mt-1"></i>

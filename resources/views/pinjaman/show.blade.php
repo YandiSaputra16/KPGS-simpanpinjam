@@ -1,3 +1,4 @@
+
 <x-app-layout>
 
     <x-slot name="header">
@@ -13,7 +14,7 @@
     </x-slot>
 
 
-    <div class="container-fluid py-4">
+    <div class="container-fluid w-100 py-3 py-md-4 px-2 px-sm-3 px-lg-4">
 
         {{-- ==========================================================
             PESAN
@@ -163,7 +164,7 @@
 
         <div class="card border-0 shadow-sm mb-4">
 
-            <div class="card-body p-4">
+            <div class="card-body p-3 p-md-4">
 
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
 
@@ -208,7 +209,7 @@
                     {{-- JUMLAH PENGAJUAN --}}
                     <div class="col-12 col-md-4">
 
-                        <div class="p-4 border-bottom border-md-bottom-0">
+                        <div class="p-3 p-md-4 border-bottom border-md-bottom-0">
 
                             <div class="small text-muted mb-1">
                                 Jumlah Pengajuan
@@ -226,7 +227,7 @@
                     {{-- REKOMENDASI AO --}}
                     <div class="col-12 col-md-4">
 
-                        <div class="p-4 border-bottom border-md-bottom-0 border-md-start">
+                        <div class="p-3 p-md-4 border-bottom border-md-bottom-0 border-md-start">
 
                             <div class="small text-muted mb-1">
                                 Rekomendasi AO
@@ -254,7 +255,7 @@
                     {{-- JUMLAH DISETUJUI --}}
                     <div class="col-12 col-md-4">
 
-                        <div class="p-4">
+                        <div class="p-3 p-md-4">
 
                             <div class="small text-muted mb-1">
                                 Jumlah Disetujui
@@ -296,7 +297,7 @@
 
                 <div class="card border-0 shadow-sm h-100">
 
-                    <div class="card-header bg-white py-3">
+                    <div class="card-header bg-white py-3 px-3 px-md-4">
 
                         <h5 class="fw-bold mb-0">
                             Data Anggota
@@ -305,7 +306,7 @@
                     </div>
 
 
-                    <div class="card-body">
+                    <div class="card-body p-3 p-md-4">
 
                         <div class="mb-4">
 
@@ -387,7 +388,7 @@
 
                 <div class="card border-0 shadow-sm h-100">
 
-                    <div class="card-header bg-white py-3">
+                    <div class="card-header bg-white py-3 px-3 px-md-4">
 
                         <h5 class="fw-bold mb-0">
                             Informasi Pinjaman
@@ -396,7 +397,7 @@
                     </div>
 
 
-                    <div class="card-body">
+                    <div class="card-body p-3 p-md-4">
 
                         <div class="row g-4">
 
@@ -528,7 +529,7 @@
 
         <div class="card border-0 shadow-sm mb-4">
 
-            <div class="card-header bg-white py-3">
+            <div class="card-header bg-white py-3 px-3 px-md-4">
 
                 <h5 class="fw-bold mb-1">
                     Data Pendukung Analisis
@@ -542,7 +543,7 @@
             </div>
 
 
-            <div class="card-body">
+            <div class="card-body p-3 p-md-4">
 
                 @if ($pinjaman->dataPendukung)
 
@@ -679,7 +680,7 @@
 
         <div class="card border-0 shadow-sm mb-4">
 
-            <div class="card-header bg-white py-3">
+            <div class="card-header bg-white py-3 px-3 px-md-4">
 
                 <h5 class="fw-bold mb-0">
                     Tujuan Pinjaman
@@ -688,7 +689,7 @@
             </div>
 
 
-            <div class="card-body">
+            <div class="card-body p-3 p-md-4">
 
                 <p class="mb-0" style="white-space: pre-line;">
                     {{ $pinjaman->tujuan_pinjaman ?: '-' }}
@@ -720,12 +721,12 @@
 
             {{-- RINGKASAN SALDO SIMPANAN --}}
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3">
+                <div class="card-header bg-white py-3 px-3 px-md-4">
                     <h5 class="fw-bold mb-1">Ringkasan Simpanan Anggota</h5>
                     <p class="text-muted small mb-0">Saldo simpanan berdasarkan data anggota yang tersimpan.</p>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body p-3 p-md-4">
                     <div class="row g-3">
                         <div class="col-12 col-md-4">
                             <div class="border rounded p-3 h-100">
@@ -757,7 +758,7 @@
 
             {{-- RIWAYAT SIMPANAN --}}
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3">
+                <div class="card-header bg-white py-3 px-3 px-md-4">
                     <h5 class="fw-bold mb-1">Riwayat Transaksi Simpanan</h5>
                     <p class="text-muted small mb-0">Maksimal 10 transaksi simpanan terbaru anggota.</p>
                 </div>
@@ -806,12 +807,12 @@
 
             {{-- RIWAYAT PINJAMAN DAN ANGSURAN --}}
             <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white py-3">
+                <div class="card-header bg-white py-3 px-3 px-md-4">
                     <h5 class="fw-bold mb-1">Riwayat Pinjaman Sebelumnya</h5>
                     <p class="text-muted small mb-0">Riwayat pengajuan terdahulu dan pembayaran angsuran anggota.</p>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body p-3 p-md-4">
                     @forelse ($riwayatPinjamanAO as $pinjamanLamaAO)
                         <div class="border rounded p-3 mb-3">
                             <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3">
@@ -903,7 +904,7 @@
 
             @if ($approvalAO)
                 <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3">
+                    <div class="card-header bg-white py-3 px-3 px-md-4">
                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
                             <div>
                                 <h5 class="fw-bold mb-1">Detail Analisis dan Rekomendasi AO</h5>
@@ -917,7 +918,7 @@
                         </div>
                     </div>
 
-                    <div class="card-body">
+                    <div class="card-body p-3 p-md-4">
                         <div class="row g-3 mb-4">
                             <div class="col-12 col-md-4">
                                 <div class="border rounded p-3 h-100">

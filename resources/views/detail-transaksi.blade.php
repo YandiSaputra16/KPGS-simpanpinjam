@@ -287,7 +287,7 @@
 @if (
     $tipeTransaksi === 'angsuran'
     && in_array($statusTransaksi, ['belum_bayar', 'ditolak'], true)
-    && !empty($pembayaran->no_pinjaman)
+    && !empty($pembayaran->pinjaman_id)
     && !empty($pembayaran->id)
 )
     <div class="card border-0 shadow-sm mb-4">
@@ -319,7 +319,7 @@
                     $statusTransaksi === 'ditolak'
                         ? 'angsuran.saya.upload-ulang'
                         : 'angsuran.saya.bayar',
-                    $pembayaran->no_pinjaman
+                    $pembayaran->pinjaman_id
                 ) }}"
                 enctype="multipart/form-data"
             >

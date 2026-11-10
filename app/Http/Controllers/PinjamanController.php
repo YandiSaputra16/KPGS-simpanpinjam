@@ -8,6 +8,7 @@ use App\Models\Pinjaman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class PinjamanController extends Controller
 {
@@ -737,6 +738,22 @@ public function kabagIndex(Request $request)
 
         if ($user->role !== 'bendahara') {
             abort(403);
+        }
+
+        $anggota = $pinjaman->anggota;
+
+        if (!$anggota || !$anggota->memilikiRekeningLengkap()) {
+            throw ValidationException::withMessages([
+                'rekening' => 'Pencairan belum dapat dilakukan. Lengkapi nama bank, nomor rekening, dan atas nama rekening anggota terlebih dahulu melalui profil atau data anggota.',
+            ]);
+        }
+
+        $anggota = $pinjaman->anggota;
+
+        if (!$anggota || !$anggota->memilikiRekeningLengkap()) {
+            throw ValidationException::withMessages([
+                'rekening' => 'Pencairan belum dapat dilakukan. Lengkapi nama bank, nomor rekening, dan atas nama rekening anggota terlebih dahulu melalui profil atau data anggota.',
+            ]);
         }
 
         try {

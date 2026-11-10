@@ -426,55 +426,78 @@
                             @endif
 
 
-                            {{-- DATA PENDUKUNG --}}
-                            @if ($item->dataPendukung && $item->dataPendukung->count() > 0)
-
+                            {{-- DATA PENDUKUNG ANALISIS --}}
+                            @if ($item->dataPendukung)
                                 <div class="mt-4">
-
-                                    <h6 class="fw-bold mb-3">
-                                        Data Pendukung
-                                    </h6>
+                                    <h6 class="fw-bold mb-3">Data Pendukung Analisis</h6>
 
                                     <div class="row g-3">
-
-                                        @foreach ($item->dataPendukung as $data)
-
-                                            <div class="col-12 col-md-6">
-
-                                                <div class="border rounded p-3">
-
-                                                    <div class="small text-muted mb-1">
-                                                        {{ $data->nama_dokumen ?? 'Dokumen' }}
-                                                    </div>
-
-                                                    @if ($data->file ?? null)
-
-                                                        <a href="{{ asset('storage/' . $data->file) }}"
-                                                           target="_blank"
-                                                           class="btn btn-sm btn-outline-primary">
-                                                            Lihat Dokumen
-                                                        </a>
-
-                                                    @else
-
-                                                        <span class="text-muted small">
-                                                            Dokumen tidak tersedia
-                                                        </span>
-
-                                                    @endif
-
+                                        <div class="col-12 col-md-6 col-lg-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="small text-muted mb-1">Produksi Susu / Bulan</div>
+                                                <div class="fw-semibold">
+                                                    {{ number_format((float) $item->dataPendukung->produksi_susu_bulanan, 2, ',', '.') }}
+                                                    liter
                                                 </div>
-
                                             </div>
+                                        </div>
 
-                                        @endforeach
+                                        <div class="col-12 col-md-6 col-lg-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="small text-muted mb-1">Jumlah Sapi</div>
+                                                <div class="fw-semibold">
+                                                    {{ number_format((int) $item->dataPendukung->jumlah_sapi, 0, ',', '.') }}
+                                                    ekor
+                                                </div>
+                                            </div>
+                                        </div>
 
+                                        <div class="col-12 col-md-6 col-lg-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="small text-muted mb-1">Kondisi Usaha</div>
+                                                <div class="fw-semibold">
+                                                    {{ ucfirst($item->dataPendukung->kondisi_usaha ?? '-') }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="small text-muted mb-1">Pendapatan / Bulan</div>
+                                                <div class="fw-semibold">
+                                                    Rp {{ number_format((float) $item->dataPendukung->pendapatan_bulanan, 0, ',', '.') }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="small text-muted mb-1">Kewajiban Angsuran Lain</div>
+                                                <div class="fw-semibold">
+                                                    Rp {{ number_format((float) $item->dataPendukung->kewajiban_angsuran_lain, 0, ',', '.') }}
+                                                    / bulan
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12 col-md-6 col-lg-4">
+                                            <div class="border rounded p-3 h-100">
+                                                <div class="small text-muted mb-1">Keterangan Tambahan</div>
+                                                <div class="fw-semibold">
+                                                    {{ $item->dataPendukung->keterangan_tambahan ?: '-' }}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-
                                 </div>
-
+                            @else
+                                <div class="mt-4">
+                                    <h6 class="fw-bold mb-2">Data Pendukung Analisis</h6>
+                                    <div class="alert alert-light border mb-0">
+                                        Data pendukung analisis belum tersedia untuk pengajuan ini.
+                                    </div>
+                                </div>
                             @endif
-
 
                             {{-- JADWAL ANGSURAN --}}
                             @if (

@@ -9,6 +9,7 @@ use App\Models\Kas;
 use App\Models\Pinjaman;
 use App\Models\Simpanan;
 use App\Models\User;
+use App\Models\PencairanSimpanan;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -95,30 +96,63 @@ class DashboardController extends Controller
     }
 
     /**
-     * Dashboard Customer Service.
-     */
-    private function csDashboard(): array
-    {
-        return [
-            'totalAnggota' => Anggota::query()
-                ->where('status_keanggotaan', 'aktif')
-                ->count(),
+ * Dashboard Customer Service.
+ */
+private function csDashboard(): array
+{
+    return [
+        // Jumlah anggota aktif.
+        'totalAnggota' => Anggota::query()
+            ->where('status_keanggotaan', 'aktif')
+            ->count(),
 
-            'menungguCS' => Pinjaman::query()
-                ->where('status', 'menunggu_cs')
-                ->count(),
+        // Jumlah pengajuan pinjaman yang menunggu pemeriksaan CS.
+        'menungguCS' => Pinjaman::query()
+            ->where('status', 'menunggu_cs')
+            ->count(),
 
-            'pinjamanAktif' => Pinjaman::query()
-                ->whereIn('status', self::STATUS_PINJAMAN_AKTIF)
-                ->count(),
+        // Jumlah pinjaman aktif.
+        'pinjamanAktif' => Pinjaman::query()
+            ->whereIn('status', self::STATUS_PINJAMAN_AKTIF)
+            ->count(),
 
-            'pengajuanCS' => Pinjaman::query()
-                ->with(['anggota.user'])
-                ->where('status', 'menunggu_cs')
-                ->latest()
-                ->get(),
-        ];
-    }
+        // Jumlah angsuran yang menunggu verifikasi CS/Teller.
+        'menungguVerifikasiAngsuran' => Angsuran::query()
+            ->menungguVerifikasi()
+            ->count(),
+
+        // Jumlah pengajuan pencairan simpanan yang menunggu pemeriksaan CS.
+        'menungguPencairanSimpanan' => PencairanSimpanan::query()
+            ->where('status', 'menunggu_cs')
+            ->count(),
+
+        // Daftar pengajuan pinjaman yang menunggu pemeriksaan CS.
+        'pengajuanCS' => Pinjaman::query()
+            ->with(['anggota.user'])
+            ->where('status', 'menunggu_cs')
+            ->latest()
+            ->get(),
+
+        // Lima pembayaran angsuran terbaru yang menunggu verifikasi.
+        'pengajuanAngsuran' => Angsuran::query()
+            ->with([
+                'pinjaman.anggota.user',
+            ])
+            ->menungguVerifikasi()
+            ->orderByDesc('tanggal_bayar')
+            ->orderByDesc('id')
+            ->limit(5)
+            ->get(),
+
+        // Lima pengajuan pencairan simpanan terbaru yang menunggu pemeriksaan CS.
+        'pengajuanPencairan' => PencairanSimpanan::query()
+            ->with(['anggota.user'])
+            ->where('status', 'menunggu_cs')
+            ->latest()
+            ->limit(5)
+            ->get(),
+    ];
+}
 
     /**
  * Dashboard Account Officer.
@@ -165,12 +199,14 @@ private function aoDashboard(): array
 }
 
 
+
 /**
  * Dashboard Kepala Bagian.
  */
 private function kabagDashboard(): array
 {
     return [
+        // Ringkasan pinjaman.
         'menungguKabag' => Pinjaman::query()
             ->where('status', 'menunggu_kabag')
             ->count(),
@@ -183,7 +219,7 @@ private function kabagDashboard(): array
             ->where('status', 'dicairkan')
             ->count(),
 
-        // Pengajuan yang membutuhkan keputusan Kabag.
+        // Pengajuan pinjaman yang membutuhkan keputusan Kabag.
         'pengajuanKabag' => Pinjaman::query()
             ->with(['anggota.user', 'masterPinjaman'])
             ->where('status', 'menunggu_kabag')
@@ -206,46 +242,128 @@ private function kabagDashboard(): array
             ->latest()
             ->limit(5)
             ->get(),
+
+        // Ringkasan pencairan simpanan yang menunggu keputusan Kabag.
+        'menungguPencairanSimpanan' => PencairanSimpanan::query()
+            ->where('status', 'menunggu_kabag')
+            ->count(),
+
+        // Total seluruh pengajuan pencairan simpanan.
+        'totalPencairanSimpanan' => PencairanSimpanan::query()
+            ->count(),
+
+        // Lima pengajuan pencairan simpanan terbaru yang menunggu keputusan Kabag.
+        'pengajuanPencairanSimpanan' => PencairanSimpanan::query()
+            ->with(['anggota.user', 'pemeriksaCs'])
+            ->where('status', 'menunggu_kabag')
+            ->latest()
+            ->limit(5)
+            ->get(),
     ];
 }
 
+/**
+ * Dashboard Bendahara.
+ *
+ * Berfokus pada pekerjaan operasional pencairan
+ * simpanan dan pinjaman.
+ */
+private function bendaharaDashboard(): array
+{
+    return [
+        /*
+        |--------------------------------------------------------------------------
+        | RINGKASAN PENCAIRAN SIMPANAN
+        |--------------------------------------------------------------------------
+        */
 
-    /**
-     * Dashboard Bendahara.
-     */
-    private function bendaharaDashboard(): array
-    {
-        return [
-            'totalSimpanan' => Simpanan::query()
-                ->where('status', 'disetujui')
-                ->sum('jumlah'),
+        'menungguPencairanSimpanan' => PencairanSimpanan::query()
+            ->where('status', 'menunggu_pencairan')
+            ->count(),
 
-            'saldoKas' => Kas::query()
-                ->orderByDesc('id')
-                ->value('saldo_sesudah') ?? 0,
+        'totalPencairanSimpananSelesai' => PencairanSimpanan::query()
+            ->where('status', 'selesai')
+            ->count(),
 
-            'menungguCS' => Pinjaman::query()->where('status', 'menunggu_cs')->count(),
-            'menungguAO' => Pinjaman::query()->where('status', 'menunggu_ao')->count(),
-            'menungguKabag' => Pinjaman::query()->where('status', 'menunggu_kabag')->count(),
-            'pinjamanDisetujui' => Pinjaman::query()->where('status', 'disetujui')->count(),
-            'pinjamanDicairkan' => Pinjaman::query()->where('status', 'dicairkan')->count(),
-            'pinjamanLunas' => Pinjaman::query()->where('status', 'lunas')->count(),
-            'pinjamanDitolak' => Pinjaman::query()->where('status', 'ditolak')->count(),
+        /*
+        |--------------------------------------------------------------------------
+        | DAFTAR PENCAIRAN SIMPANAN SIAP DIPROSES
+        |--------------------------------------------------------------------------
+        */
 
-            'pinjamanTerbaru' => Pinjaman::query()
-                ->with(['anggota.user'])
-                ->latest('tanggal_pengajuan')
-                ->limit(8)
-                ->get(),
+        'daftarPencairanSimpanan' => PencairanSimpanan::query()
+            ->with([
+                'anggota.user',
+                'penyetujuKabag',
+            ])
+            ->where('status', 'menunggu_pencairan')
+            ->latest()
+            ->limit(5)
+            ->get(),
 
-            'pinjamanSiapDicairkan' => Pinjaman::query()
-                ->with(['anggota.user'])
-                ->where('status', 'disetujui')
-                ->latest('tanggal_pengajuan')
-                ->get(),
-        ];
-    }
+        /*
+        |--------------------------------------------------------------------------
+        | RINGKASAN PENCAIRAN PINJAMAN
+        |--------------------------------------------------------------------------
+        */
 
+        'pinjamanDisetujui' => Pinjaman::query()
+            ->where('status', 'disetujui')
+            ->count(),
+
+        'pinjamanDicairkan' => Pinjaman::query()
+            ->where('status', 'dicairkan')
+            ->count(),
+
+        /*
+        |--------------------------------------------------------------------------
+        | DAFTAR PINJAMAN SIAP DICAIRKAN
+        |--------------------------------------------------------------------------
+        */
+
+        'pinjamanSiapDicairkan' => Pinjaman::query()
+            ->with([
+                'anggota.user',
+                'masterPinjaman',
+            ])
+            ->where('status', 'disetujui')
+            ->latest('tanggal_pengajuan')
+            ->limit(5)
+            ->get(),
+
+        /*
+        |--------------------------------------------------------------------------
+        | RIWAYAT PENCAIRAN SIMPANAN
+        |--------------------------------------------------------------------------
+        */
+
+        'riwayatPencairanSimpanan' => PencairanSimpanan::query()
+            ->with([
+                'anggota.user',
+                'bendahara',
+            ])
+            ->where('status', 'selesai')
+            ->latest('tanggal_pencairan')
+            ->limit(5)
+            ->get(),
+
+        /*
+        |--------------------------------------------------------------------------
+        | RIWAYAT PENCAIRAN PINJAMAN
+        |--------------------------------------------------------------------------
+        */
+
+        'riwayatPencairanPinjaman' => Pinjaman::query()
+            ->with([
+                'anggota.user',
+                'masterPinjaman',
+            ])
+            ->whereIn('status', ['dicairkan', 'lunas'])
+            ->latest('tanggal_pengajuan')
+            ->limit(5)
+            ->get(),
+    ];
+}
     /**
      * Dashboard Pimpinan.
      */

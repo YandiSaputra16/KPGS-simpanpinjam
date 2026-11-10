@@ -20,6 +20,14 @@ trait PinjamanPembayaran
             ->whereNotIn('status_pembayaran', ['lunas'])
             ->orderBy('angsuran_ke')
             ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+
+        $angsuranDipilihBerurutan = $this->angsuran()
+            ->whereIn('id', $angsuranIds)
+            ->orderBy('angsuran_ke')
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
             ->toArray();
 
         $angsuranDiizinkan = array_slice(
@@ -28,9 +36,10 @@ trait PinjamanPembayaran
             count($angsuranIds)
         );
 
-        sort($angsuranIds);
-
-        if ($angsuranIds !== $angsuranDiizinkan) {
+        if (
+            count($angsuranDipilihBerurutan) !== count($angsuranIds)
+            || $angsuranDipilihBerurutan !== $angsuranDiizinkan
+        ) {
             throw new \Exception(
                 'Pembayaran harus dimulai dari angsuran pertama yang belum dibayar dan harus berurutan.'
             );
@@ -229,16 +238,15 @@ trait PinjamanPembayaran
     ): void {
         $statusTidakValid = $this->angsuran()
             ->whereIn('id', $angsuranIds)
-            ->where(
+            ->whereNotIn(
                 'status_pembayaran',
-                '!=',
-                'belum_bayar'
+                ['belum_bayar', 'ditolak']
             )
             ->exists();
 
         if ($statusTidakValid) {
             throw new \Exception(
-                'Hanya angsuran yang belum dibayar yang dapat diajukan kembali.'
+                'Hanya angsuran yang belum dibayar atau ditolak yang dapat diajukan kembali.'
             );
         }
 

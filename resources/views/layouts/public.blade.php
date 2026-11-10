@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
@@ -40,7 +41,7 @@
     {{-- Navbar --}}
     <header class="sticky-top border-bottom bg-white shadow-sm">
         <nav class="navbar navbar-expand-lg bg-white">
-            <div class="container py-2">
+            <div class="container-fluid px-4 px-xl-5 py-2">
 
                 {{-- Logo dan identitas KPGS --}}
                 <a
@@ -174,7 +175,7 @@
         id="kontak"
         class="bg-dark text-light"
     >
-        <div class="container py-5">
+        <div class="container-fluid px-4 px-xl-5 py-5">
             <div class="row g-4">
 
                 {{-- Identitas koperasi --}}
@@ -275,7 +276,7 @@
 
         {{-- Copyright --}}
         <div class="border-top border-secondary">
-            <div class="container py-3">
+            <div class="container-fluid px-4 px-xl-5 py-3">
                 <div class="text-center small text-white-50">
                     © {{ date('Y') }}
                     {{ $pengaturan->nama_koperasi ?? 'KPGS' }}.

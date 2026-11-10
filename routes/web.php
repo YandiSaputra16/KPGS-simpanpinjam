@@ -17,6 +17,7 @@ use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\ExportLaporanKeuanganController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\ExportLaporanController;
+use App\Http\Controllers\DataAnggotaController;
 
 
 /*
@@ -315,10 +316,11 @@ Route::middleware('auth')->group(function () {
             [AngsuranController::class, 'detailTransaksiSaya']
         )->name('angsuran.saya.transaksi');
 
+        // Kompatibilitas URL lama: detail angsuran per pinjaman kini digabung ke halaman utama.
         Route::get(
             '/angsuran-saya/{pinjaman}',
-            [AngsuranController::class, 'detailMilikSaya']
-        )->name('angsuran.saya.show');
+            fn () => redirect()->route('angsuran.saya.index')
+        )->whereNumber('pinjaman')->name('angsuran.saya.show');
 
         Route::post(
             '/angsuran-saya/{pinjaman}/bayar',
@@ -389,6 +391,18 @@ Route::middleware('auth')->group(function () {
             '/pinjaman/ao/{pinjaman}/tolak',
             [PinjamanController::class, 'aoTolak']
         )->name('pinjaman.ao.tolak');
+
+        // DATA ANGGOTA - AO
+        Route::get(
+            '/data-anggota',
+            [DataAnggotaController::class, 'index']
+        )->name('data-anggota.ao.index');
+
+        Route::get(
+            '/data-anggota/{anggota}',
+            [DataAnggotaController::class, 'show']
+        )->whereNumber('anggota')
+        ->name('data-anggota.ao.show');
     });
 
 
@@ -487,19 +501,25 @@ Route::middleware('role:kabag')->group(function () {
     |--------------------------------------------------------------------------
     |
     */
+/*
+|--------------------------------------------------------------------------
+| Laporan Simpanan
+|--------------------------------------------------------------------------
+*/
 
-   Route::middleware('role:cs,bendahara')->group(function () {
-    Route::get(
-        '/laporan/simpanan',
-        [LaporanController::class, 'simpanan']
-    )->name('laporan.simpanan');
+Route::get(
+    '/laporan/simpanan',
+    [LaporanController::class, 'simpanan']
+)
+    ->middleware('role:cs')
+    ->name('laporan.simpanan');
 
-    Route::get(
-        '/laporan/simpanan/export',
-        [LaporanController::class, 'exportSimpanan']
-    )->name('laporan.simpanan.export');
-});
-
+Route::get(
+    '/laporan/simpanan/export',
+    [LaporanController::class, 'exportSimpanan']
+)
+    ->middleware('role:cs')
+    ->name('laporan.simpanan.export');
 
     /*
     |--------------------------------------------------------------------------
@@ -527,8 +547,14 @@ Route::middleware('role:kabag')->group(function () {
         '/laporan/angsuran',
         [LaporanController::class, 'angsuran']
     )
-        ->middleware('role:kabag,bendahara')
+        ->middleware('role:cs,kabag,bendahara')
         ->name('laporan.angsuran');
+        Route::get(
+    '/laporan/angsuran/export',
+    [LaporanController::class, 'exportAngsuran']
+)
+    ->middleware('role:cs,kabag,bendahara')
+    ->name('laporan.angsuran.export');
 
 
     /*
@@ -558,29 +584,76 @@ Route::middleware('role:kabag')->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware('role:anggota')->group(function () {
-        Route::get('/pencairan-simpanan-saya', [PencairanSimpananController::class, 'anggotaIndex'])
-            ->name('pencairan-simpanan.saya.index');
-        Route::get('/pencairan-simpanan-saya/ajukan', [PencairanSimpananController::class, 'create'])
-            ->name('pencairan-simpanan.saya.create');
-        Route::post('/pencairan-simpanan-saya', [PencairanSimpananController::class, 'store'])
-            ->name('pencairan-simpanan.saya.store');
+    
+/*
+|--------------------------------------------------------------------------
+| PENCAIRAN SIMPANAN
+|--------------------------------------------------------------------------
+*/
+
+// ANGGOTA
+Route::middleware('role:anggota')
+    ->prefix('pencairan-simpanan-saya')
+    ->name('pencairan-simpanan.saya.')
+    ->group(function () {
+        Route::get('/', [PencairanSimpananController::class, 'anggotaIndex'])
+            ->name('index');
+
+        Route::get('/ajukan', [PencairanSimpananController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [PencairanSimpananController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'anggotaShow'])
+            ->name('show');
     });
 
-    Route::middleware('role:cs')->prefix('pencairan-simpanan/cs')->name('pencairan-simpanan.cs.')->group(function () {
-        Route::get('/', [PencairanSimpananController::class, 'csIndex'])->name('index');
-        Route::post('/{pencairanSimpanan}/periksa', [PencairanSimpananController::class, 'periksaCs'])->name('periksa');
+// CS / TELLER
+Route::middleware('role:cs')
+    ->prefix('pencairan-simpanan/cs')
+    ->name('pencairan-simpanan.cs.')
+    ->group(function () {
+        Route::get('/', [PencairanSimpananController::class, 'csIndex'])
+            ->name('index');
+
+        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'csShow'])
+            ->name('show');
+
+        Route::post('/{pencairanSimpanan}/periksa', [PencairanSimpananController::class, 'periksaCs'])
+            ->name('periksa');
     });
 
-    Route::middleware('role:kabag')->prefix('pencairan-simpanan/kabag')->name('pencairan-simpanan.kabag.')->group(function () {
-        Route::get('/', [PencairanSimpananController::class, 'kabagIndex'])->name('index');
-        Route::post('/{pencairanSimpanan}/keputusan', [PencairanSimpananController::class, 'keputusanKabag'])->name('keputusan');
+// KABAG
+Route::middleware('role:kabag')
+    ->prefix('pencairan-simpanan/kabag')
+    ->name('pencairan-simpanan.kabag.')
+    ->group(function () {
+        Route::get('/', [PencairanSimpananController::class, 'kabagIndex'])
+            ->name('index');
+
+        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'kabagShow'])
+            ->name('show');
+
+        Route::post('/{pencairanSimpanan}/keputusan', [PencairanSimpananController::class, 'keputusanKabag'])
+            ->name('keputusan');
     });
 
-    Route::middleware('role:bendahara')->prefix('pencairan-simpanan/bendahara')->name('pencairan-simpanan.bendahara.')->group(function () {
-        Route::get('/', [PencairanSimpananController::class, 'bendaharaIndex'])->name('index');
-        Route::post('/{pencairanSimpanan}/cairkan', [PencairanSimpananController::class, 'cairkan'])->name('cairkan');
+// BENDAHARA
+Route::middleware('role:bendahara')
+    ->prefix('pencairan-simpanan/bendahara')
+    ->name('pencairan-simpanan.bendahara.')
+    ->group(function () {
+        Route::get('/', [PencairanSimpananController::class, 'bendaharaIndex'])
+            ->name('index');
+
+        Route::get('/{pencairanSimpanan}', [PencairanSimpananController::class, 'bendaharaShow'])
+            ->name('show');
+
+        Route::post('/{pencairanSimpanan}/cairkan', [PencairanSimpananController::class, 'cairkan'])
+            ->name('cairkan');
     });
+
 
     });
 

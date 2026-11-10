@@ -10,8 +10,9 @@
         </div>
     </x-slot>
 
-    <div class="container-fluid py-4">
-        <div class="container kpgs-container-900">
+    <div class="container-fluid py-3 py-md-4 px-2 px-sm-3 px-lg-4">
+        <div class="w-100">>
+            {{-- Tombol kembali --}}
 
             {{-- Informasi alur --}}
             <div class="alert alert-info border-0 shadow-sm mb-4" role="alert">
@@ -206,66 +207,58 @@
                             <div class="row g-3">
 
                                 {{-- Transfer --}}
-                                <div class="col-12 col-md-6">
-                                    <label
-                                        class="border rounded p-3 h-100 d-flex align-items-start gap-3 w-100"
-                                        for="metode_transfer"
-                                        class="kpgs-pointer"
-                                    >
-                                        <input
-                                            type="radio"
-                                            id="metode_transfer"
-                                            name="metode_pembayaran"
-                                            value="transfer"
-                                            class="form-check-input mt-1 flex-shrink-0"
-                                            @checked(old('metode_pembayaran') === 'transfer')
-                                            required
-                                        >
+                               <div class="col-12">
+    <div class="border rounded-3 p-4 h-100 bg-white">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="rounded-3 bg-primary bg-opacity-10 text-primary p-3">
+                <i class="bi bi-bank fs-3"></i>
+            </div>
+            <div>
+                <h6 class="fw-bold mb-1">Transfer Bank</h6>
+                <p class="text-muted small mb-0">
+                    Lakukan pembayaran melalui rekening resmi KPGS.
+                </p>
+            </div>
+        </div>
 
-                                        <span>
-                                            <span class="d-block fw-semibold">
-                                                <i class="bi bi-bank me-1"></i>
-                                                Transfer
-                                            </span>
+        <div class="bg-light border rounded-3 p-4">
+            <div class="mb-3">
+                <span class="d-block text-muted small mb-1">Bank</span>
+                <span class="fw-semibold fs-5">BRI</span>
+            </div>
 
-                                            <span class="d-block text-muted small mt-1">
-                                                Upload bukti transfer setelah pembayaran.
-                                            </span>
-                                        </span>
-                                    </label>
-                                </div>
+            <div class="mb-3">
+                <span class="d-block text-muted small mb-1">Nomor Rekening</span>
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <strong class="text-primary fs-4">
+                        0000-0000-0000-000
+                    </strong>
 
-                                {{-- Tunai --}}
-                                <div class="col-12 col-md-6">
-                                    <label
-                                        class="border rounded p-3 h-100 d-flex align-items-start gap-3 w-100"
-                                        for="metode_tunai"
-                                        class="kpgs-pointer"
-                                    >
-                                        <input
-                                            type="radio"
-                                            id="metode_tunai"
-                                            name="metode_pembayaran"
-                                            value="tunai"
-                                            class="form-check-input mt-1 flex-shrink-0"
-                                            @checked(old('metode_pembayaran') === 'tunai')
-                                        >
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary"
+                        onclick="navigator.clipboard.writeText('000000000000000')"
+                    >
+                        <i class="bi bi-copy me-1"></i>
+                        Salin Nomor Rekening
+                    </button>
+                </div>
+            </div>
 
-                                        <span>
-                                            <span class="d-block fw-semibold">
-                                                <i class="bi bi-cash-stack me-1"></i>
-                                                Tunai
-                                            </span>
+            <div>
+                <span class="d-block text-muted small mb-1">Atas Nama</span>
+                <span class="fw-semibold">
+                    Koperasi Peternak Garut Selatan
+                </span>
+            </div>
+        </div>
 
-                                            <span class="d-block text-muted small mt-1">
-                                                Pembayaran tunai akan diperiksa oleh Bendahara.
-                                            </span>
-                                        </span>
-                                    </label>
-                                </div>
-
-                            </div>
-
+        <div class="alert alert-info mt-3 mb-0 small">
+            <i class="bi bi-info-circle me-1"></i>
+            Silakan transfer sesuai nominal pembayaran, kemudian unggah bukti transfer pada formulir di bawah.
+        </div>
+    </div>
+</div>
                             @error('metode_pembayaran')
                                 <div class="text-danger small mt-2">
                                     {{ $message }}
