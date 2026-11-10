@@ -71,6 +71,9 @@ class AnggotaController extends Controller
                 'string',
                 'max:255',
             ],
+            'nama_bank' => ['nullable', 'string', 'max:100'],
+            'nomor_rekening' => ['nullable', 'string', 'max:50'],
+            'atas_nama_rekening' => ['nullable', 'string', 'max:150'],
 
             'tanggal_daftar' => [
                 'required',
@@ -101,6 +104,9 @@ class AnggotaController extends Controller
                 'no_hp' => $validated['no_hp'],
                 'alamat' => $validated['alamat'],
                 'pekerjaan' => $validated['pekerjaan'] ?? null,
+                'nama_bank' => $validated['nama_bank'] ?? null,
+                'nomor_rekening' => $validated['nomor_rekening'] ?? null,
+                'atas_nama_rekening' => $validated['atas_nama_rekening'] ?? null,
                 'tanggal_daftar' => $validated['tanggal_daftar'],
                 'status_keanggotaan' => 'aktif',
                 'saldo_simpanan_pokok' => 0,
@@ -172,6 +178,9 @@ class AnggotaController extends Controller
                 'string',
                 'max:255',
             ],
+            'nama_bank' => ['nullable', 'string', 'max:100'],
+            'nomor_rekening' => ['nullable', 'string', 'max:50'],
+            'atas_nama_rekening' => ['nullable', 'string', 'max:150'],
 
             'tanggal_daftar' => [
                 'required',
@@ -214,6 +223,9 @@ class AnggotaController extends Controller
                 'no_hp' => $validated['no_hp'],
                 'alamat' => $validated['alamat'],
                 'pekerjaan' => $validated['pekerjaan'] ?? null,
+                'nama_bank' => $validated['nama_bank'] ?? null,
+                'nomor_rekening' => $validated['nomor_rekening'] ?? null,
+                'atas_nama_rekening' => $validated['atas_nama_rekening'] ?? null,
                 'tanggal_daftar' => $validated['tanggal_daftar'],
                 'status_keanggotaan' => $validated['status_keanggotaan'],
             ]);

@@ -501,7 +501,25 @@ Route::middleware('role:kabag')->group(function () {
     |--------------------------------------------------------------------------
     |
     */
+/*
+|--------------------------------------------------------------------------
+| Laporan Simpanan
+|--------------------------------------------------------------------------
+*/
 
+Route::get(
+    '/laporan/simpanan',
+    [LaporanController::class, 'simpanan']
+)
+    ->middleware('role:cs')
+    ->name('laporan.simpanan');
+
+Route::get(
+    '/laporan/simpanan/export',
+    [LaporanController::class, 'exportSimpanan']
+)
+    ->middleware('role:cs')
+    ->name('laporan.simpanan.export');
 
     /*
     |--------------------------------------------------------------------------
@@ -529,8 +547,14 @@ Route::middleware('role:kabag')->group(function () {
         '/laporan/angsuran',
         [LaporanController::class, 'angsuran']
     )
-        ->middleware('role:kabag,bendahara')
+        ->middleware('role:cs,kabag,bendahara')
         ->name('laporan.angsuran');
+        Route::get(
+    '/laporan/angsuran/export',
+    [LaporanController::class, 'exportAngsuran']
+)
+    ->middleware('role:cs,kabag,bendahara')
+    ->name('laporan.angsuran.export');
 
 
     /*

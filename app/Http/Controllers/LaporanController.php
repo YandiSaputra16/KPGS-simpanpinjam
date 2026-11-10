@@ -14,6 +14,7 @@ use App\Models\PencairanSimpanan;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Exports\LaporanSimpananExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\LaporanAngsuranExport;
 
 class LaporanController extends Controller
 {
@@ -589,6 +590,29 @@ public function exportSimpanan(Request $request)
             )
         );
     }
+
+    
+/**
+ * Export laporan angsuran ke Excel.
+ */
+public function exportAngsuran(Request $request)
+{
+    $filters = $request->validate([
+        'search' => ['nullable', 'string', 'max:255'],
+        'status' => [
+            'nullable',
+            'in:belum_bayar,menunggu_verifikasi,lunas,ditolak',
+        ],
+        'dari' => ['nullable', 'date'],
+        'sampai' => ['nullable', 'date', 'after_or_equal:dari'],
+    ]);
+
+    return Excel::download(
+        new LaporanAngsuranExport($filters),
+        'laporan-angsuran-' . now()->format('Ymd_His') . '.xlsx'
+    );
+}
+
 
 
     /*

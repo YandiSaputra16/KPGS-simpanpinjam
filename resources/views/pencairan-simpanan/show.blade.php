@@ -94,12 +94,23 @@
                 </div></div>
             @elseif($isBendahara)
                 <div class="card border-0 shadow-sm"><div class="card-header bg-white py-3"><h2 class="h5 fw-bold mb-0">Pembayaran Bendahara</h2></div><div class="card-body">
-                    <div class="alert alert-info small">Pastikan dana benar-benar telah diserahkan kepada anggota sebelum mencatat pembayaran.</div>
+                    @php($rekeningLengkap = $anggota->memilikiRekeningLengkap())
+                    <div class="bg-light border rounded p-3 mb-3">
+                        <h3 class="h6 fw-bold mb-3">Tujuan Transfer Anggota</h3>
+                        @if ($rekeningLengkap)
+                            <div class="mb-2"><div class="small text-muted">Nama Bank</div><div class="fw-semibold">{{ $anggota->nama_bank }}</div></div>
+                            <div class="mb-2"><div class="small text-muted">Nomor Rekening</div><div class="fw-semibold">{{ $anggota->nomor_rekening }}</div></div>
+                            <div><div class="small text-muted">Atas Nama</div><div class="fw-semibold">{{ $anggota->atas_nama_rekening }}</div></div>
+                        @else
+                            <div class="alert alert-warning small mb-0">Data rekening anggota belum lengkap. Lengkapi data rekening sebelum pencairan.</div>
+                        @endif
+                    </div>
+                    <div class="alert alert-info small">Pastikan dana benar-benar telah ditransfer ke rekening anggota sebelum mencatat pembayaran.</div>
                     <div class="d-flex justify-content-between mb-3"><span class="text-muted">Nominal dibayarkan</span><strong>Rp {{ number_format((float)$item->jumlah,0,',','.') }}</strong></div>
                     <form method="POST" action="{{ route('pencairan-simpanan.bendahara.cairkan',$item) }}" enctype="multipart/form-data">@csrf
                         <label class="form-label">Tanggal pembayaran</label><input class="form-control mb-3" type="date" name="tanggal_pencairan" value="{{ old('tanggal_pencairan',now()->toDateString()) }}" max="{{ now()->toDateString() }}" required>
                         <label class="form-label">Bukti pembayaran (opsional)</label><input class="form-control mb-3" type="file" name="bukti_pencairan" accept="image/jpeg,image/png,image/webp">
-                        <button class="btn btn-primary w-100" type="submit" onclick="return confirm('Pastikan dana telah dibayarkan. Lanjutkan pencatatan kas keluar dan pengurangan saldo?')">Bayar & Catat Kas Keluar</button>
+                        <button class="btn btn-primary w-100" type="submit" @disabled(!$rekeningLengkap) onclick="return confirm('Pastikan dana telah dibayarkan. Lanjutkan pencatatan kas keluar dan pengurangan saldo?')">Bayar & Catat Kas Keluar</button>
                     </form>
                 </div></div>
             @else

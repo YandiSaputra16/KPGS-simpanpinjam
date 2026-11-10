@@ -101,6 +101,31 @@
                     </p>
 
 
+                    @php($rekeningLengkap = $pinjaman->anggota?->memilikiRekeningLengkap() ?? false)
+                    <div class="bg-light border rounded p-3 mb-3">
+                        <h6 class="fw-bold mb-3">Tujuan Transfer Anggota</h6>
+                        @if ($rekeningLengkap)
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4">
+                                    <div class="small text-muted">Nama Bank</div>
+                                    <div class="fw-semibold">{{ $pinjaman->anggota->nama_bank }}</div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="small text-muted">Nomor Rekening</div>
+                                    <div class="fw-semibold">{{ $pinjaman->anggota->nomor_rekening }}</div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="small text-muted">Atas Nama</div>
+                                    <div class="fw-semibold">{{ $pinjaman->anggota->atas_nama_rekening }}</div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="alert alert-warning mb-0">
+                                Data rekening anggota belum lengkap. Lengkapi data rekening sebelum pencairan.
+                            </div>
+                        @endif
+                    </div>
+
                     <form
                         method="POST"
                         action="{{ route('pinjaman.bendahara.cairkan', $pinjaman) }}"
@@ -112,6 +137,7 @@
                         <button
                             type="submit"
                             class="btn btn-primary"
+                            @disabled(!$rekeningLengkap)
                         >
                             Cairkan Pinjaman
                         </button>

@@ -21,6 +21,12 @@ class Anggota extends Model
         'no_hp',
         'alamat',
         'pekerjaan',
+
+        // Informasi rekening anggota
+        'nama_bank',
+        'nomor_rekening',
+        'atas_nama_rekening',
+
         'tanggal_daftar',
         'status_keanggotaan',
         'saldo_simpanan_pokok',
@@ -81,10 +87,10 @@ class Anggota extends Model
     public function getTotalSimpananAttribute(): float
     {
         return (float) $this->saldo_simpanan_pokok
-             + (float) $this->saldo_simpanan_wajib
-             + (float) $this->saldo_simpanan_sukarela;
+            + (float) $this->saldo_simpanan_wajib
+            + (float) $this->saldo_simpanan_sukarela;
     }
-    
+
     public function getPinjamanAktifAttribute(): ?Pinjaman
     {
         return $this->pinjaman()
@@ -140,5 +146,15 @@ class Anggota extends Model
     public function isAktif(): bool
     {
         return $this->status_keanggotaan === 'aktif';
+    }
+
+    /**
+     * Memeriksa apakah informasi rekening sudah lengkap.
+     */
+    public function memilikiRekeningLengkap(): bool
+    {
+        return filled($this->nama_bank)
+            && filled($this->nomor_rekening)
+            && filled($this->atas_nama_rekening);
     }
 }

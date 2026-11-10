@@ -16,7 +16,7 @@
 
     
 $laporanMenus = match ($role) {
-    'cs' => [
+     'cs' => [
         [
             'label' => 'Laporan Anggota',
             'route' => 'laporan.anggota',
@@ -26,6 +26,11 @@ $laporanMenus = match ($role) {
             'label' => 'Laporan Simpanan',
             'route' => 'laporan.simpanan',
             'active' => 'laporan.simpanan',
+        ],
+        [
+            'label' => 'Laporan Angsuran',
+            'route' => 'laporan.angsuran',
+            'active' => 'laporan.angsuran',
         ],
         [
             'label' => 'Laporan Pinjaman',
@@ -400,24 +405,20 @@ $laporanMenus = match ($role) {
                 </div>
 
                 @foreach ($laporanMenus as $laporan)
-                    @if (Route::has($laporan['route']))
-                        <a
-                            href="{{ route($laporan['route']) }}"
-                            class="nav-link rounded px-3 py-2
-                                {{ request()->routeIs($laporan['active'])
-                                    ? 'bg-light text-dark fw-semibold'
-                                    : 'text-secondary' }}"
-                        >
-                           @if ($laporan['route'] === 'laporan.anggota')
-                                    <i class="bi bi-people me-2"></i>
-                                @elseif ($laporan['route'] === 'laporan.simpanan')
-                                    <i class="bi bi-piggy-bank me-2"></i>
-                                @else
-                                    <i class="bi bi-file-earmark-bar-graph me-2"></i>
-                                @endif
-                            {{ $laporan['label'] }}
-                        </a>
-                    @endif
+
+                    <a
+                        href="{{ route($laporan['route']) }}"
+                        class="nav-link rounded px-3 py-2
+                            {{ $laporan['active'] && request()->routeIs($laporan['active'])
+                                ? 'bg-light text-dark fw-semibold'
+                                : 'text-secondary' }}"
+                    >
+                        {!! $laporan['route'] === 'laporan.anggota' ? '<i class="bi bi-people me-2"></i>' : '' !!}
+                        {!! $laporan['route'] === 'laporan.simpanan' ? '<i class="bi bi-piggy-bank me-2"></i>' : '' !!}
+                        {!! $laporan['route'] === 'laporan.angsuran' ? '<i class="bi bi-calendar-check me-2"></i>' : '' !!}
+                        {!! $laporan['route'] === 'laporan.pinjaman' ? '<i class="bi bi-file-earmark-bar-graph me-2"></i>' : '' !!}
+                        {{ $laporan['label'] }}
+                    </a>
                     
                 @endforeach
 

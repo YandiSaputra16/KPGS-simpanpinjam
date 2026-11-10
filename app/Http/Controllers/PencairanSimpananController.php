@@ -366,6 +366,13 @@ public function bendaharaIndex(): View
                 }
 
                 $anggota = Anggota::whereKey($item->anggota_id)->lockForUpdate()->firstOrFail();
+
+                if (!$anggota->memilikiRekeningLengkap()) {
+                    throw ValidationException::withMessages([
+                        'rekening' => 'Pencairan belum dapat dilakukan. Lengkapi nama bank, nomor rekening, dan atas nama rekening anggota terlebih dahulu.',
+                    ]);
+                }
+
                 $kolom = $this->kolomSaldo($item->jenis_simpanan);
                 $jumlah = (float) $item->jumlah;
 
